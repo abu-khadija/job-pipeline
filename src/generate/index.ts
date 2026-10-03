@@ -160,7 +160,7 @@ export async function runGenerate(opts: GenerateOptions): Promise<GenerateSummar
 
     // Write → code gates → fact check; one retry with the reasons, then hold.
     for (let attempt = 0; attempt < 2; attempt++) {
-      const w = await writer.write({ job, company, role, variant, leadStatements, feedback });
+      const w = await writer.write({ job, company, role, variant, leadStatements, feedback, locationUnclear: row.breakdown.includes("location unclear") });
       usage = addUsage(usage, w.usage);
       if (!w.draft) {
         gates = [{ gate: "write", pass: false, detail: w.error ?? "no draft" }];

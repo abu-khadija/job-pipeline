@@ -37,6 +37,7 @@ const ScoringSchema = z.object({
   applyThreshold: z.number(),
   maybeThreshold: z.number(),
   referralMinScore: z.number(),
+  unclearLocationMinScore: z.number(),
   weights: z.object({
     roleFit: z.number(),
     roleFitP3Cap: z.number(),
@@ -78,6 +79,7 @@ const SourcesSchema = z.object({
       requests: z.array(z.record(z.string(), z.string())),
     }),
     weworkremotely: z.object({ enabled: z.boolean(), feeds: z.array(z.string()) }),
+    builtin: z.object({ enabled: z.boolean(), listPages: z.array(z.string()), maxJobsPerRun: z.number(), delayMs: z.number() }),
   }).passthrough(),
   ats: z.object({
     enabled: z.boolean(),

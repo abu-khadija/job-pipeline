@@ -10,7 +10,9 @@ import { dedupe, type KnownJob } from "./dedupe.js";
 import { buildDigest } from "./digest.js";
 import { applyHardFilters } from "./filters/hardFilters.js";
 import { checkLive, type Liveness } from "./liveness.js";
+import { detectAts } from "./normalize/ats.js";
 import { toJob, type RawJob } from "./normalize/index.js";
+import { eligibilityOf } from "./normalize/location.js";
 import { passesTitlePrefilter } from "./normalize/title.js";
 import { combineScore, formatBreakdown, scoreBand, statusForScore } from "./score/deterministic.js";
 import { addUsage, emptyUsage, estimateCostUsd, pool, type Scorer } from "./score/scorer.js";
@@ -19,6 +21,7 @@ import { fetchBoard } from "./sources/atsBoards.js";
 import { fetchAll } from "./sources/index.js";
 import type { Store } from "./store/types.js";
 import type { HttpGet } from "./util/http.js";
+import { verifyJob, type Verdict } from "./verify/index.js";
 import { activeBoards, updateWatchlist, withSeeds } from "./watchlist.js";
 
 export type RunKind = "boards" | "ats" | "all";
@@ -36,6 +39,8 @@ export interface RunOptions {
   liveness?: (url: string) => Promise<Liveness>;
   /** Injected in tests; defaults to the real Greenhouse/Lever/Ashby lookup. */
   probe?: Parameters<typeof updateWatchlist>[5];
+  /** Injected in tests; defaults to checking the job on the company's own careers site. */
+  verify?: (company: string, title: string) => Promise<Verdict>;
 }
 
 export interface RunSummary {
@@ -114,6 +119,7 @@ export async function runFetch(opts: RunOptions): Promise<RunSummary> {
   const nowIso = now.toISOString();
   const log = opts.log ?? (() => {});
   const liveness = opts.liveness ?? ((url: string) => checkLive(url, cfg.sources.userAgent));
+  const verify = opts.verify ?? ((company: string, title: string) => verifyJob(get, company, title, cfg.targeting));
   const startedAt = new Date().toISOString();
   const errors: string[] = [];
 
@@ -189,6 +195,7 @@ export async function runFetch(opts: RunOptions): Promise<RunSummary> {
   const capped = toScore.slice(0, cfg.limits.maxScoredPerRun);
   const results = scorer && capped.length ? await scorer.scoreMany(capped.map((t) => t.job)) : new Map();
   const newlyShortlisted: JobRow[] = [];
+  const toVerify: { job: Job; row: JobRow }[] = [];
   for (const { job, row } of toScore) {
     const res = results.get(job.id);
     if (!scorer || !res) {
@@ -235,9 +242,34 @@ export async function runFetch(opts: RunOptions): Promise<RunSummary> {
     ].filter(Boolean);
     row.breakdown = [formatBreakdown(b), ...notes].join(" | ");
     row.status = statusForScore(b, cfg.scoring);
-    if (row.status === "shortlisted") newlyShortlisted.push(row);
+    if (row.status === "shortlisted") toVerify.push({ job, row });
   }
   log(`Scored ${scored}, ~$${costUsd.toFixed(3)} (cache read ${usage.cacheRead} tokens)`);
+
+  // 6b. Can someone in Egypt really get it? Check the company's own careers site, because
+  // boards get this wrong. "No" drops the job; a job whose post never says where it hires is
+  // shortlisted only with a high score (the letter then explains contractor / EOR).
+  await pool(toVerify, 3, async ({ job, row }) => {
+    const v = await verify(job.company, job.title).catch((): Verdict => ({ egypt: "unknown", reason: "company site check failed", posting: null }));
+    if (v.posting) {
+      row.apply_url = v.posting.url;
+      row.ats = detectAts(v.posting.url, null);
+    }
+    if (v.egypt === "no") {
+      row.status = "filtered_out";
+      row.filter_reasons = `not open to Egypt: ${v.reason}`;
+      return;
+    }
+    const confirmed = v.egypt === "yes" || eligibilityOf(job.remoteScope, job.viaEor) === "yes";
+    if (confirmed) {
+      row.breakdown = [row.breakdown, `Egypt OK: ${v.egypt === "yes" ? v.reason : `post says ${job.remoteScope}`}`].join(" | ");
+      newlyShortlisted.push(row);
+      return;
+    }
+    row.breakdown = [row.breakdown.replace(" | location unclear", ""), `location unclear: ${v.reason}`].join(" | ");
+    if (Number(row.score) >= cfg.scoring.unclearLocationMinScore) newlyShortlisted.push(row);
+    else row.status = "maybe";
+  });
 
   // 7. Is each new shortlisted job still open? (cheap; avoids wasted drafts later)
   await pool(newlyShortlisted, 5, async (row) => {

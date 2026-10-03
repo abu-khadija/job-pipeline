@@ -18,6 +18,7 @@ const fakeGet: HttpGet = async (url) => {
   if (url.includes("remotive.com")) return url.includes("category=qa") ? fixture("remotive.json") : JSON.stringify({ jobs: [] });
   if (url.includes("weworkremotely.com/remote-jobs.rss")) return fixture("wwr.xml");
   if (url.includes("weworkremotely.com")) return '<?xml version="1.0"?><rss><channel></channel></rss>';
+  if (url.includes("builtin.com")) return "<html></html>";
   if (url.includes("api.lever.co/v0/postings/spotify")) return fixture("lever.json");
   if (url.includes("boards-api.greenhouse.io/v1/boards/gitlab")) return fixture("greenhouse.json");
   if (url.includes("api.ashbyhq.com/posting-api/job-board/ramp")) return fixture("ashby.json");
@@ -176,10 +177,10 @@ describe("runFetch — boards", () => {
 
   it("companies with Egypt-eligible jobs are looked up and added to the watchlist", async () => {
     const store = new MemoryStore();
-    const probe = vi.fn(async (_c: unknown, _g: unknown, company: string) => (company === "Halborn" ? { ats: "lever" as const, slug: "halborn" } : null));
+    const probe = vi.fn(async (_c: unknown, _g: unknown, company: string) => (company === "Watu" ? { ats: "lever" as const, slug: "watu" } : null));
     await run(store, new FakeScorer(), { probe });
     const w = store.tables.Watchlist;
-    expect(w.some((r) => r.slug === "halborn" && r.ats === "lever" && r.active === "yes")).toBe(true);
+    expect(w.some((r) => r.slug === "watu" && r.ats === "lever" && r.active === "yes")).toBe(true);
     expect(w.some((r) => r.ats === "none" && r.active === "no")).toBe(true); // remembered, not looked up again
     expect(probe.mock.calls.length).toBeLessThanOrEqual(cfg.sources.ats.maxNewCompanyLookupsPerRun);
     const calls = probe.mock.calls.length;
@@ -243,3 +244,30 @@ describe("LocalStore (--local)", () => {
     expect((await run(store, null)).stopped).toBe(true);
   });
 });
+
+describe("runFetch — Egypt check on the company site", () => {
+  const shortlistedIn = (store: MemoryStore) => store.tables.Jobs.filter((r) => r.status === "shortlisted");
+  it("company site says no → the job is dropped with the reason", async () => {
+    const store = new MemoryStore();
+    await run(store, new FakeScorer(), { verify: async () => ({ egypt: "no", reason: "company site (recruitee: Poland, Brazil)", posting: null }) });
+    expect(shortlistedIn(store)).toHaveLength(0);
+    expect(store.tables.Filtered.some((r) => r.filter_reasons.startsWith("not open to Egypt: company site"))).toBe(true);
+  });
+  it("company site says yes → shortlisted with the company's own apply link", async () => {
+    const store = new MemoryStore();
+    const posting = { provider: "lever" as const, url: "https://jobs.lever.co/acme/1", title: "QA", places: ["Egypt"], remote: true, text: "" };
+    await run(store, new FakeScorer(), { verify: async () => ({ egypt: "yes", reason: "company site (lever: Egypt)", posting }) });
+    const s = shortlistedIn(store);
+    expect(s.length).toBeGreaterThan(0);
+    expect(s.every((r) => r.apply_url === "https://jobs.lever.co/acme/1" && r.ats === "lever")).toBe(true);
+  });
+  it("nobody says where it hires → maybe below the unclear-location score, shortlisted above it", async () => {
+    const store = new MemoryStore();
+    await run(store, new FakeScorer(), { verify: async () => ({ egypt: "unknown", reason: "not found", posting: null }) });
+    const rows = [...store.tables.Jobs];
+    for (const r of rows.filter((x) => x.breakdown.includes("location unclear"))) {
+      expect(r.status).toBe(Number(r.score) >= cfg.scoring.unclearLocationMinScore ? "shortlisted" : "maybe");
+    }
+  });
+});
+

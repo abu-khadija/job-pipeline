@@ -29,3 +29,11 @@ live run 2 of 15 looked-up companies had a Greenhouse/Lever/Ashby board (Sporty 
 ## Phase 1b (not built yet)
 
 Jobicy, Arbeitnow, Working Nomads, Hacker News "Who is hiring". Verify each the same way before adding.
+
+## Added Oct 3, 2026
+
+| Source | Endpoint | Notes |
+| --- | --- | --- |
+| Built In | `https://builtin.com/jobs/remote/dev-engineering/qa[/senior]?country=EGY` + each `/job/<slug>/<id>` page | Job pages embed schema.org `JobPosting` with `applicantLocationRequirements` (`EGY` = Egypt). ~10 jobs per listing page. robots.txt disallows `?search=`, `?page=`, `/jobs/*mid-level`, `/apply/`; allowed pages only, 1.5 s apart, twice a day. Many results are Egyptian companies (salary often unstated). |
+| Company careers boards (check only) | Recruitee `/api/offers/`, Personio `/xml`, Greenhouse/Lever/Ashby public APIs, Workable widget API | Used to verify a job's real allowed countries and get the company's own apply link. Found by company-name slugs. |
+| Himalayas (correction) | — | `country=EG` also returns every job with an EMPTY `locationRestrictions`; empty means "not stated", not worldwide. |

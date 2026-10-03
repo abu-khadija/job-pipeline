@@ -2,6 +2,7 @@
 import type { Config } from "../config.js";
 import type { RawJob } from "../normalize/index.js";
 import type { HttpGet } from "../util/http.js";
+import { fetchBuiltin } from "./builtin.js";
 import { fetchHimalayas } from "./himalayas.js";
 import { fetchRemoteOk } from "./remoteok.js";
 import { fetchRemotive } from "./remotive.js";
@@ -9,11 +10,12 @@ import { fetchWwr } from "./wwr.js";
 
 type Fetcher = (cfg: Config, get: HttpGet) => Promise<RawJob[]>;
 
-const FETCHERS: { name: "himalayas" | "remoteok" | "remotive" | "weworkremotely"; run: Fetcher }[] = [
+const FETCHERS: { name: "himalayas" | "remoteok" | "remotive" | "weworkremotely" | "builtin"; run: Fetcher }[] = [
   { name: "himalayas", run: fetchHimalayas },
   { name: "remoteok", run: fetchRemoteOk },
   { name: "remotive", run: fetchRemotive },
   { name: "weworkremotely", run: fetchWwr },
+  { name: "builtin", run: fetchBuiltin },
 ];
 
 export interface FetchResult {

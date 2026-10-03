@@ -4,6 +4,9 @@
 applyThreshold: 70
 maybeThreshold: 60
 referralMinScore: 80    # shortlisted jobs at or above this go to the Referrals tab
+# A post that never says where it hires (and the company site doesn't either) is shortlisted
+# only at this score or above; below it, it stays "maybe". The letter then explains contractor/EOR.
+unclearLocationMinScore: 80
 
 weights:
   roleFit: 25           # P1/P2 up to 25, P3/unknown up to roleFitP3Cap

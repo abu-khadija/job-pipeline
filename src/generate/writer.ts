@@ -17,6 +17,8 @@ export interface WriteRequest {
   leadStatements: number[];
   /** Problems from the last attempt, so a retry can fix them. */
   feedback?: string[];
+  /** The post (and the company site) never say whether they hire in Egypt. */
+  locationUnclear?: boolean;
 }
 
 /** Anything that can write and check drafts. Tests use a fake; production uses Sonnet. */
@@ -48,6 +50,13 @@ export function buildWriteMessage(req: WriteRequest): string {
     `Role name to use: ${req.role}`,
     `CV variant: ${req.variant}. Lead with approved statements ${req.leadStatements.join(", ")}.`,
   ];
+  if (req.locationUnclear) {
+    lines.push(
+      "The post does not say whether they can hire someone in Egypt. In both the cover letter and the email, add one plain,",
+      "confident sentence (no apology): he is based in Alexandria, Egypt, works as a contractor or through an employer of record",
+      "such as Deel, and works in US and EU time zones (his CV header). Keep it to that one sentence.",
+    );
+  }
   if (req.feedback?.length) {
     lines.push("", "Your last draft was rejected for these reasons. Fix all of them:", ...req.feedback.map((f) => `- ${f}`));
   }

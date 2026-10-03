@@ -151,6 +151,39 @@ Decisions to confirm (Islam):
 14. **The `Sent` tab replaces the planned `Contacts` tab** (same job: caps and per-company limits).
 15. **Exceptions in dry runs:** none are written by `send` any more; forms are all handled in `apply`.
 
+## Egypt eligibility fix — Oct 3, 2026
+
+Problem Islam found: 3 of the first 5 "Egypt-eligible" jobs were not open to Egypt.
+Root cause: Himalayas returns every job with NO country list for `country=EG`, and our code read an
+empty list as "worldwide". TransPerfect (15 countries, no Egypt) and zvoove (Germany/Austria
+employees) came in this way.
+
+- Empty country list = unknown, never worldwide. A Gulf/MENA verdict needs the whole list to be
+  Gulf/MENA (Morocco among 14 other countries is just a country list).
+- **Company-site check** (`src/verify/`): before a job is shortlisted, it is looked up on the
+  company's own Recruitee / Personio / Greenhouse / Lever / Ashby / Workable board by name. That
+  site's locations decide: not Egypt → dropped with the reason; found → the company's own apply link
+  replaces the job board's (no more Himalayas paywall). One country next to a remote job is read as
+  the office (The Codest: Poland); a region ("Europe") or a list is a real limit.
+- German permanent-employment phrases added to `rejectRegion` (DE/AT, Festangestellte, …).
+- A job that never says where it hires is shortlisted only at score ≥ 80
+  (`scoring.yaml → unclearLocationMinScore`), and its letter adds one sentence: based in Egypt,
+  contractor or EOR (Deel), US and EU time zones.
+- `npm run verify` re-checks jobs already in the Sheet. First run: TransPerfect and zvoove moved
+  to Filtered; Codest recorded as applied (Islam applied by hand).
+- **New source: Built In** (`country=EGY` QA pages). Each job page states its allowed countries in
+  schema.org data, so "open to Egypt" comes from the company. Storyteller's QA job was listed there.
+  robots.txt allows these pages; search and pagination are disallowed, so supply is ~15-20 jobs.
+- Checked and not added: Jobicy (filters return Europe-only, non-QA jobs), Working Nomads (6 QA
+  jobs, none relevant), Jobgether (403 to automated requests).
+
+Decisions to confirm (Islam):
+
+16. **Salary floor 2,000 USD/month would have dropped Storyteller** (20,000 EUR/year ≈ 1,800
+    USD/month). Lower `salaryFloorUsdMonth` in `config/targeting.yaml` if roles like that are wanted.
+17. **LinkedIn / Wuzzuf job-alert emails** are the biggest untapped source of jobs that say
+    "Egypt (Remote)". Gmail read access now exists; the parser needs real alert emails to be built from.
+
 ## Next: calibration
 
 Islam reads the drafts and writes comments in Drafts `notes`; prompts and `config/writing.yaml` are

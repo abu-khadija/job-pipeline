@@ -48,9 +48,14 @@ describe("source-specific behaviour", () => {
     expect(withSalary?.salaryNumbers?.period).toBe("year");
   });
 
-  it("Himalayas (country=EG): jobs without restrictions are worldwide", () => {
-    const j = toJob(all.himalayas[0]!, cfg, NOW);
-    expect(["worldwide", "egypt", "emea", "africa"]).toContain(j.remoteScope);
+  it("Himalayas (country=EG): no restrictions is NOT worldwide; only the post's text can say so", () => {
+    const base = all.himalayas[0]!;
+    const silent = toJob({ ...base, places: [], locationText: "", descriptionHtml: "<p>QA role. Playwright.</p>" }, cfg, NOW);
+    expect(silent.remoteScope).toBe("unknown");
+    const said = toJob({ ...base, places: [], locationText: "", descriptionHtml: "<p>We hire worldwide, work from anywhere.</p>" }, cfg, NOW);
+    expect(said.remoteScope).toBe("worldwide");
+    const egypt = toJob({ ...base, places: ["Egypt"], locationText: "Egypt" }, cfg, NOW);
+    expect(egypt.remoteScope).toBe("egypt");
   });
 
   it("Remotive: 'USA' becomes us_only and is not eligible", () => {

@@ -39,6 +39,7 @@ npm run replies                   # Phase 5: sorts replies; invites → alert em
 npm run followup                  # Phase 5: one follow-up in the same thread after 6 days
 npm run daily                     # all of the above except apply (zsh scripts/install-mac-schedule.sh = hourly)
 npm run gmail:auth                # one-time Gmail sign-in (docs/SETUP-ISLAM.md B2)
+npm run verify                    # re-check Sheet jobs on the company's own site: open to Egypt?
 ```
 
 First time only, for the PDF CV: `npx playwright install chromium`.

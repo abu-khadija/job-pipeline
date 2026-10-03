@@ -19,7 +19,8 @@
     "replies": "tsx src/cli.ts replies",
     "followup": "tsx src/cli.ts followup",
     "daily": "tsx src/cli.ts daily",
-    "gmail:auth": "tsx src/gmailAuth.ts"
+    "gmail:auth": "tsx src/gmailAuth.ts",
+    "verify": "tsx src/cli.ts verify"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",

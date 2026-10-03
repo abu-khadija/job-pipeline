@@ -31,12 +31,15 @@ function inList(item: string, list: string[]): boolean {
  */
 export function classifyLocationList(places: string[], gulfPlaces: string[] = []): RemoteScope {
   const items = places.map((p) => p.trim()).filter(Boolean);
-  if (items.length === 0) return "worldwide";
+  // An empty list means the company didn't say, not "worldwide" (Himalayas shows such jobs to
+  // every country; TransPerfect and zvoove looked open to Egypt this way and were not).
+  if (items.length === 0) return "unknown";
   if (items.some((p) => inList(p, ["egypt", "eg"]))) return "egypt";
   if (items.some((p) => inList(p, ["africa"]))) return "africa";
   if (items.some((p) => inList(p, ["emea", "mena", "middle east"]))) return "emea";
   if (items.some((p) => inList(p, ["worldwide", "anywhere", "global", "anywhere in the world"]))) return "worldwide";
-  if (gulfPlaces.length && items.some((p) => inList(p, gulfPlaces))) return "gulf";
+  // Gulf only when the whole list is Gulf/MENA: Morocco among 14 other countries is just a country list.
+  if (gulfPlaces.length && items.every((p) => inList(p, gulfPlaces))) return "gulf";
   if (items.every((p) => inList(p, US_REGIONS))) return "us_only";
   if (items.every((p) => inList(p, [...US_REGIONS, ...AMERICAS_REGIONS]))) return "americas_only";
   if (items.every((p) => inList(p, EUROPE_REGIONS))) return "europe_only";
@@ -99,8 +102,8 @@ export function classifyLocation(
     return { scope, eligible: "unknown", reasons: [`location: "${region[0]}" but hires via EOR/contractors`] };
   }
 
-  // 3. A structured list from the source.
-  if (input.places !== undefined) {
+  // 3. A structured list from the source. An empty list says nothing: read the text instead.
+  if (input.places !== undefined && input.places.some((p) => p.trim())) {
     const scope = classifyLocationList(input.places, gulf);
     const eligible = eligibilityOf(scope, input.viaEor);
     if (eligible === "no") reasons.push(`location: limited to ${input.places.join(", ")}`);

@@ -125,6 +125,20 @@ location:
     - latam only
     - americas only
     - north america only
+    # German/Austrian permanent-employment posts (zvoove: "DE/AT - Festangestellte").
+    - de/at
+    - remote de
+    - festangestellte
+    - festanstellung
+    - wohnsitz in deutschland
+    - based in germany
+    - residing in germany
+    - located in germany
+    - must be based in europe
+    - must be located in europe
+    - must reside in europe
+    - based in the eu
+    - located in the eu
   # Gulf/MENA countries. A list limited to these is "gulf": not dropped, the AI judges it
   # (Gulf companies often hire Egyptians remotely; Arabic is a plus).
   gulfPlaces: [united arab emirates, uae, dubai, abu dhabi, saudi arabia, ksa, riyadh, jeddah, qatar, doha, kuwait, bahrain, oman, gcc, jordan, morocco, tunisia, lebanon]

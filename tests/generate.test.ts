@@ -282,3 +282,11 @@ describe("runGenerate", () => {
     expect(src).not.toMatch(/gmail|nodemailer|smtp|\.click\(|\.fill\(/i);
   });
 });
+
+describe("letters for jobs that don't say where they hire", () => {
+  it("asks for one contractor/EOR sentence only when the location is unclear", () => {
+    const base = { job: job(), company: "Acme", role: "QA Automation Engineer", variant: "ai_automation" as const, leadStatements: [1] };
+    expect(buildWriteMessage({ ...base, locationUnclear: true })).toMatch(/employer of record\s+such as Deel/);
+    expect(buildWriteMessage(base)).not.toMatch(/employer of record/);
+  });
+});

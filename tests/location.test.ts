@@ -42,7 +42,7 @@ describe("classifyLocation — free text (WWR, Remote OK)", () => {
 });
 
 describe("classifyLocation — structured lists (Himalayas, Remotive)", () => {
-  it("empty list means worldwide", () => expect(list([]).eligible).toBe("yes"));
+  it("empty list means unknown, not worldwide (Himalayas: company didn't say)", () => expect(list([]).eligible).toBe("unknown"));
   it("a list containing Egypt is eligible", () => expect(list(["Saudi Arabia", "Egypt"]).scope).toBe("egypt"));
   it("USA only is not eligible", () => expect(list(["USA"]).scope).toBe("us_only"));
   it("Americas mix is not eligible", () => expect(list(["USA", "Canada"]).scope).toBe("americas_only"));

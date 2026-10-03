@@ -23,6 +23,16 @@ sources:
     requests:
       - { category: qa }
       - { search: test automation }
+  builtin:
+    enabled: true
+    # Remote QA jobs that list Egypt as an allowed country (each job page states it in its data).
+    # robots.txt: listing/category pages and job pages are allowed; ?search= and ?page= are not.
+    listPages:
+      - "https://builtin.com/jobs/remote/dev-engineering/qa?country=EGY"
+      - "https://builtin.com/jobs/remote/dev-engineering/qa/senior?country=EGY"
+      # Not added: /qa/mid-level (robots.txt disallows "/jobs/*mid-level"); hybrid (remote only).
+    maxJobsPerRun: 25
+    delayMs: 1500          # one page every 1.5 s: be gentle
   weworkremotely:
     enabled: true
     # The main feed shows ~10 jobs per category, so category feeds are added. No QA category exists.

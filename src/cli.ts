@@ -12,6 +12,7 @@
 //   npm run replies                    → Phase 5: read replies, alert + prep pack on invites
 //   npm run followup                   → Phase 5: one follow-up after N days without a reply
 //   npm run daily                      → generate → send → replies → followup (the Mac runs this hourly)
+//   npm run verify                     → check jobs in the Sheet on the company's own site (Egypt allowed?)
 import "dotenv/config";
 import { writeFileSync, mkdirSync } from "node:fs";
 import { createInterface } from "node:readline/promises";
@@ -25,6 +26,8 @@ import { execFile } from "node:child_process";
 import { GmailMailbox, gmailDaysLeft, type Mailbox } from "./gmail.js";
 import { ClaudeReplyBrain, runFollowups, runReplies } from "./replies.js";
 import { runSend } from "./send/index.js";
+import { verifyJob } from "./verify/index.js";
+import { runVerify } from "./verify/run.js";
 import { runFetch, type RunKind } from "./pipeline.js";
 import { buildReport } from "./report.js";
 import { BatchHaikuScorer, HaikuScorer, type Scorer } from "./score/scorer.js";
@@ -94,6 +97,11 @@ async function main() {
     const store = makeStore(local);
     console.log(`Drafting to: ${store.name}. Drafting never sends anything.`);
     await generate(cfg, store, jobIds, max);
+    return;
+  }
+  if (command === "verify") {
+    const get = makeHttpGet(cfg.sources);
+    await runVerify({ store: makeStore(local), verify: (c, t) => verifyJob(get, c, t, cfg.targeting), log });
     return;
   }
   if (command === "send") {
