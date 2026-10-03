@@ -42,15 +42,15 @@ no Google credentials, no remote, nothing pushed. Commits use a placeholder auth
 
 - [x] `npm test` and `npm run typecheck` pass; tests cover section 14 incl. prompt injection.
 - [x] `npm run fetch -- --local` produces `out/jobs.csv` from real sources.
-- [ ] `npm run fetch` writes to the Sheet — **code done, not run yet: needs SETUP A4–A6.**
+- [x] `npm run fetch` writes to the Sheet — done on the personal Mac, Oct 3, 2026.
 - [x] `STOP` makes the run exit immediately (tested, also via the CLI).
 - [x] Running twice creates no duplicate rows (tested and checked live).
 - [ ] GitHub Actions runs on schedule — **needs the private repo + secrets (SETUP A3, A7).**
 - [x] `docs/PROGRESS.md` and `docs/SOURCES-VERIFIED.md` written.
 - [x] Zero sending code exists.
-- [ ] First AI-scored run reviewed (top 10 + cost) — **needs the API key.**
-- [ ] `cache_read_tokens` > 0 in the Runs tab after the first scored run (proves caching works).
-  If it stays 0, count the system prompt with the token-counting API and add examples until ≥ 4096.
+- [ ] First AI-scored run reviewed (top 10 + cost) — run done Oct 3, 2026: 30 jobs scored for ~$0.13
+  (5 shortlisted, 9 maybe, 12 low_score). Islam still has to review the top 10.
+- [x] `cache_read_tokens` > 0 in the Runs tab after the first scored run (18,162 on Oct 3, 2026).
 
 ### Decisions to confirm (Islam)
 

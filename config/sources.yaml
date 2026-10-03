@@ -1,6 +1,6 @@
 # Job sources. Endpoints were checked on Oct 2, 2026; details in docs/SOURCES-VERIFIED.md.
 
-userAgent: "job-pipeline (personal job search; contact: TODO_PERSONAL_GMAIL)"
+userAgent: "job-pipeline (personal job search; contact: islamabukhadiga@gmail.com)"
 timeoutMs: 20000
 retries: 2
 

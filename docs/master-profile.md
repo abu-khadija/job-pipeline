@@ -9,7 +9,7 @@ Anything not here is treated as false. The full fixed CV is in `cv-master.md`.
 - Title: AI-First QA Engineer | Playwright (TypeScript) · AI-Agent-Driven Test Automation · Enterprise SaaS
 - Location: Alexandria, Egypt. Remote only.
 - Phone: +20 106 899 2404
-- Email: `TODO_PERSONAL_GMAIL` (Islam fills in; the pipeline must refuse to generate while this is TODO)
+- Email: `islamabukhadiga@gmail.com`
 - Links: linkedin.com/in/abukhadija-iti · github.com/abu-khadija
 - Languages: Arabic (native), English (fluent, daily work with a North American team)
 - Level: 3+ years full-time QA since May 2023 (+ internship Mar–May 2023). Mid-level, not senior.
