@@ -23,6 +23,7 @@ salaryPoints:          # USD per month, uses the max of the posted range
     - { min: 5000, points: 15 }
     - { min: 3000, points: 13 }
     - { min: 2000, points: 9 }
+    - { min: 1800, points: 4 }   # allowed, but ranks below every better-paid or unstated job
   notStated: 7
 
 freshnessPoints:       # the first 48 hours matter most

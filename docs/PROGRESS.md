@@ -179,8 +179,9 @@ employees) came in this way.
 
 Decisions to confirm (Islam):
 
-16. **Salary floor 2,000 USD/month would have dropped Storyteller** (20,000 EUR/year ≈ 1,800
-    USD/month). Lower `salaryFloorUsdMonth` in `config/targeting.yaml` if roles like that are wanted.
+16. **Salary floor lowered to 1,800 USD/month** (Islam, Oct 3), so roles like Storyteller (≈1,800)
+    pass. Higher pay stays the priority: 1,800–1,999 earns 4 salary points, below an unstated
+    salary (7) and every tier from 2,000 up.
 17. **LinkedIn / Wuzzuf job-alert emails** are the biggest untapped source of jobs that say
     "Egypt (Remote)". Gmail read access now exists; the parser needs real alert emails to be built from.
 

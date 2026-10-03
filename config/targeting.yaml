@@ -172,5 +172,5 @@ typeBKeywords: [llm evaluation, model evaluation, red teaming, prompt injection,
 
 maxAgeDays: 30
 maxYearsForSeniorTitles: 5      # senior/lead title AND more years than this → drop
-salaryFloorUsdMonth: 2000       # stated max below this → drop
-salaryFloorUsdHour: 13          # for hourly posts
+salaryFloorUsdMonth: 1800       # stated max below this → drop (Islam, Oct 3: 1,800 for now; higher pay ranks first)
+salaryFloorUsdHour: 11          # for hourly posts (1,800 / 160 h)

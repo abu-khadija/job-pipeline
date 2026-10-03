@@ -17,7 +17,8 @@ describe("deterministic points", () => {
     expect(salaryPoints(5000, s)).toBe(15);
     expect(salaryPoints(3500, s)).toBe(13);
     expect(salaryPoints(2000, s)).toBe(9);
-    expect(salaryPoints(1999, s)).toBe(0);
+    expect(salaryPoints(1999, s)).toBe(4); // 1,800-1,999: allowed since Oct 3, ranks low
+    expect(salaryPoints(1799, s)).toBe(0);
     expect(salaryPoints(null, s)).toBe(7);
   });
   it("freshness: the first 48 hours earn the most", () => {
