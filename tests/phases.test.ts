@@ -280,10 +280,11 @@ describe("runApply (Phase 4)", () => {
   it("records only what Islam says he submitted; keeps, skips and quits", async () => {
     const { store } = storeWith(forms());
     const filler = new FakeFiller();
-    const answers = ["s", "n", "q"];
-    const r = await runApply({ cfg, store, filler, ask: async () => answers.shift()!, now: AT_NOON });
+    // b and c are Himalayas links: each first asks for the company link.
+    const answers = ["s", "https://jobs.ashbyhq.com/b/1", "n", "https://boards.greenhouse.io/c/jobs/2", "q"];
+    const r = await runApply({ cfg, store, filler, ask: async () => answers.shift()!, openExternal: () => {}, now: AT_NOON });
     expect(r.submitted).toBe(1);
-    expect(filler.urls).toEqual(["https://jobs.lever.co/a/1", "https://himalayas.app/b", "https://himalayas.app/c"]);
+    expect(filler.urls).toEqual(["https://jobs.lever.co/a/1", "https://jobs.ashbyhq.com/b/1", "https://boards.greenhouse.io/c/jobs/2"]);
     expect(filler.closed).toBe(true);
     const ds = await store.readTable("Drafts");
     expect(ds.find((d) => d.job_id === "a")!.status).toBe("sent");
@@ -294,9 +295,28 @@ describe("runApply (Phase 4)", () => {
     expect((await store.readTable("Jobs")).find((j) => j.job_id === "a")!.status).toBe("applied");
   });
 
+  it("Himalayas: opens it in Islam's browser, uses the pasted company link and remembers it", async () => {
+    const { store } = storeWith([draft({ job_id: "b", company: "B", route: "link", apply_to: "https://himalayas.app/b" })]);
+    const opened: string[] = [];
+    const filler = new FakeFiller();
+    const answers = ["https://jobs.lever.co/b/9", "k"];
+    await runApply({ cfg, store, filler, ask: async () => answers.shift()!, openExternal: (u) => opened.push(u), now: AT_NOON });
+    expect(opened).toEqual(["https://himalayas.app/b"]);
+    expect(filler.urls).toEqual(["https://jobs.lever.co/b/9"]);
+    expect((await store.readTable("Drafts"))[0]).toMatchObject({ apply_to: "https://jobs.lever.co/b/9", route: "form", status: "draft" });
+  });
+
+  it("Himalayas: an empty or Himalayas answer skips without opening the robot browser", async () => {
+    const { store } = storeWith([draft({ route: "link", apply_to: "https://himalayas.app/b" })]);
+    const filler = new FakeFiller();
+    const answers = ["https://himalayas.app/b/apply"];
+    await runApply({ cfg, store, filler, ask: async () => answers.shift() ?? "", openExternal: () => {}, now: AT_NOON });
+    expect(filler.urls).toHaveLength(0);
+  });
+
   it("keep for later changes nothing", async () => {
     const { store } = storeWith(forms());
-    await runApply({ cfg, store, filler: new FakeFiller(), ask: async () => "k", now: AT_NOON });
+    await runApply({ cfg, store, filler: new FakeFiller(), ask: async (q) => (q.startsWith("Paste") ? "" : "k"), openExternal: () => {}, now: AT_NOON });
     expect((await store.readTable("Sent"))).toHaveLength(0);
   });
 });

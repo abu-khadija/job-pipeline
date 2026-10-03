@@ -103,7 +103,10 @@ async function main() {
   if (command === "apply") {
     const rl = createInterface({ input: process.stdin, output: process.stdout });
     try {
-      await runApply({ cfg, store: makeStore(local), filler: new PlaywrightFiller(), ask: (q) => rl.question(q), max, log });
+      await runApply({
+        cfg, store: makeStore(local), filler: new PlaywrightFiller(), ask: (q) => rl.question(q),
+        openExternal: (url) => execFile("open", [url], () => undefined), max, log,
+      });
     } finally {
       rl.close();
     }

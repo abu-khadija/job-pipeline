@@ -2,8 +2,12 @@
 // best score first: open the form in a visible browser, fill it, then wait for Islam:
 //   s = I submitted it · k = keep for later · n = not applying · q = quit
 // Only "s" is recorded as sent. The pipeline never presses Submit.
+//
+// Himalayas shows a human check to automated browsers, and we never get past those. So a Himalayas
+// link opens in Islam's own browser; he clicks Apply there and pastes the company's link back.
 import path from "node:path";
 import type { Config } from "../config.js";
+import { cleanUrl, detectAts } from "../normalize/ats.js";
 import type { DraftRow, JobRow, SentRow } from "../schema.js";
 import { companyAllowed } from "../send/rules.js";
 import type { Store } from "../store/types.js";
@@ -15,6 +19,8 @@ export interface ApplyOptions {
   filler: FormFiller;
   /** Asks Islam a question in the terminal and returns the answer. */
   ask: (question: string) => Promise<string>;
+  /** Opens a URL in Islam's normal browser (macOS `open`). */
+  openExternal: (url: string) => void;
   max?: number;
   now?: Date;
   log?: (msg: string) => void;
@@ -25,6 +31,14 @@ export function formDrafts(drafts: DraftRow[]): DraftRow[] {
     .filter((d) => d.status === "draft" && (d.route === "form" || d.route === "link"))
     .sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0));
 }
+
+const isHimalayas = (url: string) => {
+  try {
+    return new URL(url).hostname.endsWith("himalayas.app");
+  } catch {
+    return false;
+  }
+};
 
 export async function runApply(opts: ApplyOptions): Promise<{ submitted: number }> {
   const { cfg, store, filler, ask } = opts;
@@ -58,7 +72,24 @@ export async function runApply(opts: ApplyOptions): Promise<{ submitted: number 
       }
       const job: JobRow | undefined = jobById.get(d.job_id);
       log(`\n=== ${d.company} — ${d.title} (score ${d.score})`);
-      const r = await filler.fill(d.apply_to, job?.ats ?? "", path.resolve(d.files || "."), {
+      let url = d.apply_to;
+      // The ATS comes from the link itself (it may be a company link pasted in an earlier session).
+      let ats = detectAts(url, null);
+      if (isHimalayas(url)) {
+        log("Opening the Himalayas page in your normal browser. Click \"Apply\" there; it takes you to the company's page.");
+        opts.openExternal(url);
+        const pasted = (await ask("Paste the company's application link here (Enter = skip for now): ")).trim();
+        const clean = cleanUrl(pasted);
+        if (!clean || isHimalayas(clean)) {
+          log(pasted ? "That isn't a company link. Skipped for now." : "Skipped for now.");
+          continue;
+        }
+        // Remember it, so next time the form opens directly.
+        url = d.apply_to = clean;
+        ats = detectAts(clean, null);
+        d.route = "form";
+      }
+      const r = await filler.fill(url, ats, path.resolve(d.files || "."), {
         company: d.company,
         coverLetter: d.cover_letter,
         salaryUsdMonth: job?.salary_usd_month ?? "",
