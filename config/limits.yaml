@@ -31,6 +31,9 @@ sending:                  # Phase 3+. Nothing is sent unless Control!B2 = live A
   maxFollowUpsPerDay: 10
   maxSendsPerRun: 3       # the Mac runs hourly, so sends are spread over the day
   workingHoursUtc: { start: 7, end: 19 }   # spread sends across this window
+  # No sends or follow-ups on these days (UTC): the companies are in the US/EU, where Saturday
+  # and Sunday are weekends, and a weekend email sinks under Monday's inbox. 0 = Sunday, 6 = Saturday.
+  skipDaysUtc: [6, 0]
   replyLookbackDays: 45   # how far back to look for replies
   followUpAfterDays: 6
   maxFollowUps: 1

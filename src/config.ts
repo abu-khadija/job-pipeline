@@ -107,6 +107,7 @@ const LimitsSchema = z.object({
     maxFollowUpsPerDay: z.number(),
     maxSendsPerRun: z.number(),
     workingHoursUtc: z.object({ start: z.number(), end: z.number() }),
+    skipDaysUtc: z.array(z.number().int().min(0).max(6)),
     followUpAfterDays: z.number(),
     maxFollowUps: z.number(),
     replyLookbackDays: z.number(),

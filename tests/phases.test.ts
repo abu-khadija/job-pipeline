@@ -421,3 +421,17 @@ describe("Gmail sign-in expiry", () => {
     expect(gmailDaysLeft(undefined, AT_NOON)).toBeNull();
   });
 });
+
+describe("weekends", () => {
+  it("no sending on Saturday or Sunday, even in working hours", () => {
+    expect(inWorkingHours(new Date("2026-10-03T12:00:00Z"), L)).toBe(false); // Saturday
+    expect(inWorkingHours(new Date("2026-10-04T12:00:00Z"), L)).toBe(false); // Sunday
+    expect(inWorkingHours(new Date("2026-10-05T12:00:00Z"), L)).toBe(true);  // Monday
+  });
+  it("a live send on Saturday sends nothing", async () => {
+    const { store } = storeWith([draft()]);
+    const mb = new FakeMailbox();
+    await runSend({ cfg, store, mailbox: mb, now: new Date("2026-10-03T12:00:00Z"), env: LIVE_ENV });
+    expect(mb.sentMail).toHaveLength(0);
+  });
+});

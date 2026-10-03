@@ -38,7 +38,7 @@ Then open Claude Code in the repo and paste `FIRST-PROMPT.md`.
   Gmail sending runs on the Mac (it needs the PDF files), so no GitHub Secrets are needed for Gmail.
 - [ ] **B3. Job alerts to that Gmail.** Create alerts on LinkedIn, Wellfound, Jobgether, EU Remote Jobs, Remote Rocketship, Built In, Welcome to the Jungle, using the P1/P2 titles in `config/targeting.yaml`, remote, worldwide/EMEA. Also **Bayt** and **Wuzzuf** (Gulf/Egypt market): remote QA, foreign-currency pay.
 - [ ] **B3b. LinkedIn profile** (recruiter advice, ~15 min): headline and Open to Work as in `docs/ROADMAP-AFTER-PIPELINE.md`.
-- [ ] **B4. Go-live approval.** Only after B1–B2: set `Control!B2` to `live` in the Sheet AND `DRY_RUN=false` in `.env`. Both are needed; caps apply automatically (15/day, 3 per hourly run, 07:00–19:00 UTC, one per company per 60 days).
+- [ ] **B4. Go-live approval.** Only after B1–B2: set `Control!B2` to `live` in the Sheet AND `DRY_RUN=false` in `.env`. Both are needed; caps apply automatically (15/day, 3 per hourly run, 07:00–19:00 UTC Monday–Friday, one per company per 60 days).
 - [ ] **B5. Hourly runs on the Mac (optional).** `zsh scripts/install-mac-schedule.sh` runs `npm run daily` every hour (drafts, email sends, replies, follow-ups). The Mac must be awake. Remove it with the command at the top of that script.
 - **Forms:** run `npm run apply` when you sit down. It opens each form in a browser and fills it (green = filled, yellow = check, red = you answer). You press Submit, then type `s` in the terminal.
 

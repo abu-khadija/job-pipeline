@@ -23,7 +23,9 @@ export function followUpsToday(sent: SentRow[], now: Date): number {
   return sent.filter((s) => s.followed_up_at && day(s.followed_up_at) === day(now.toISOString())).length;
 }
 
+/** Sending window: working hours, and not on weekend days (config `skipDaysUtc`). */
 export function inWorkingHours(now: Date, l: Limits): boolean {
+  if (l.sending.skipDaysUtc.includes(now.getUTCDay())) return false;
   const h = now.getUTCHours();
   return h >= l.sending.workingHoursUtc.start && h < l.sending.workingHoursUtc.end;
 }

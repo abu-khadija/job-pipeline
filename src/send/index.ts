@@ -47,7 +47,7 @@ export async function runSend(opts: SendOptions): Promise<SendSummary> {
   const live = isLive(control, env);
   log(live ? "LIVE: applications will really be sent." : "DRY RUN: nothing is sent (Control!B2 must be live AND DRY_RUN=false to send).");
   if (live && !inWorkingHours(now, l)) {
-    log(`Outside sending hours (${l.sending.workingHoursUtc.start}:00-${l.sending.workingHoursUtc.end}:00 UTC). Nothing sent this run.`);
+    log(`Outside sending hours (${l.sending.workingHoursUtc.start}:00-${l.sending.workingHoursUtc.end}:00 UTC, no sends on Saturday/Sunday). Nothing sent this run.`);
     return { stopped: false, live, sent: [], wouldSend: [], waitingForms: 0 };
   }
 
