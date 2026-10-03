@@ -10,8 +10,9 @@ sources:
     # Search endpoint, filtered to jobs open to candidates in Egypt. 20 jobs per page (fixed by Himalayas).
     url: "https://himalayas.app/jobs/api/search"
     country: EG
-    queries: [qa engineer, quality assurance, test automation, sdet, software tester, qa analyst, arabic qa, localization qa]
-    maxPagesPerQuery: 5
+    # country=EG guarantees Egypt-eligible, so cast a wide net here. More queries = more real jobs.
+    queries: [qa engineer, quality assurance, test automation, automation engineer, sdet, software tester, qa analyst, qa automation, test engineer, quality engineer, automation tester, test analyst, qa specialist, playwright, cypress, selenium, manual tester, mobile qa, arabic qa, localization qa]
+    maxPagesPerQuery: 8
   remoteok:
     enabled: true
     # Returns the latest ~100 jobs. First element is a legal notice; link back to Remote OK.
@@ -30,8 +31,11 @@ sources:
     listPages:
       - "https://builtin.com/jobs/remote/dev-engineering/qa?country=EGY"
       - "https://builtin.com/jobs/remote/dev-engineering/qa/senior?country=EGY"
+      - "https://builtin.com/jobs/remote/dev-engineering/qa/project-mgmt?country=EGY"
+      - "https://builtin.com/jobs/emea/remote/dev-engineering/qa"
+      - "https://builtin.com/jobs/mena/remote/dev-engineering/qa"
       # Not added: /qa/mid-level (robots.txt disallows "/jobs/*mid-level"); hybrid (remote only).
-    maxJobsPerRun: 25
+    maxJobsPerRun: 40
     delayMs: 1500          # one page every 1.5 s: be gentle
   weworkremotely:
     enabled: true
