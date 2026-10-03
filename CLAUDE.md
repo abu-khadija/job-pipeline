@@ -57,4 +57,5 @@ npm run fetch -- --no-ai # skip Haiku; jobs that pass filters are saved as "unsc
 npm run fetch -- --only=boards   # job boards (2x/day in CI, Batch API scoring)
 npm run fetch -- --only=ats      # watchlist ATS boards (every 3h in CI, real-time scoring)
 npm run report           # reply rate by source / CV variant / score band
+npm run generate         # Phase 2: drafts for shortlisted jobs (Drafts tab + out/drafts/), sends nothing
 ```

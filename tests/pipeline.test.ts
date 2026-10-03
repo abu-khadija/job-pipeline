@@ -26,7 +26,7 @@ const fakeGet: HttpGet = async (url) => {
 
 class MemoryStore implements Store {
   readonly name = "memory";
-  tables: { [T in TabName]: TabRows[T][] } = { Jobs: [], Filtered: [], Referrals: [], Watchlist: [], Runs: [], Exceptions: [] };
+  tables: { [T in TabName]: TabRows[T][] } = { Jobs: [], Filtered: [], Referrals: [], Watchlist: [], Runs: [], Exceptions: [], Drafts: [] };
   private raw = this.tables as unknown as Record<TabName, object[]>;
   reads = 0;
   constructor(public control: Control = { killSwitch: "RUN", mode: "dry" }) {}

@@ -5,10 +5,14 @@
 //   npm run fetch -- --local           → write to out/ instead of the Sheet
 //   npm run fetch -- --no-ai           → skip Haiku scoring (jobs saved as "unscored")
 //   npm run report [-- --local]        → reply rates by source / CV variant / score band
+//   npm run generate [-- --local]      → Phase 2: drafts for shortlisted jobs (Drafts tab + out/drafts/)
+//   npm run generate -- --job=<id>,<id> --max=3   → only these jobs / at most 3
 import "dotenv/config";
 import { writeFileSync, mkdirSync } from "node:fs";
 import { loadConfig } from "./config.js";
 import { sendTelegram } from "./digest.js";
+import { runGenerate } from "./generate/index.js";
+import { SonnetWriter } from "./generate/writer.js";
 import { runFetch, type RunKind } from "./pipeline.js";
 import { buildReport } from "./report.js";
 import { BatchHaikuScorer, HaikuScorer, type Scorer } from "./score/scorer.js";
@@ -37,8 +41,17 @@ async function main() {
     console.log(report.text);
     return;
   }
+  if (command === "generate") {
+    if (!process.env.ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY is not set (docs/SETUP-ISLAM.md A4/A6).");
+    const jobIds = flags.find((f) => f.startsWith("--job="))?.split("=")[1]?.split(",").filter(Boolean);
+    const max = Number(flags.find((f) => f.startsWith("--max="))?.split("=")[1]) || undefined;
+    const store = makeStore(local);
+    console.log(`Drafting to: ${store.name}. Nothing is sent: you apply by hand from out/drafts/.`);
+    await runGenerate({ cfg, store, get: makeHttpGet(cfg.sources), writer: new SonnetWriter(cfg), jobIds, max, log: (m) => console.log(m) });
+    return;
+  }
   if (command !== "fetch") {
-    console.error("Usage: npm run fetch [-- --only=boards|ats] [--local] [--no-ai]   |   npm run report [-- --local]");
+    console.error("Usage: npm run fetch [-- --only=boards|ats] [--local] [--no-ai]   |   npm run generate [-- --job=<id> --max=N --local]   |   npm run report [-- --local]");
     process.exit(2);
   }
 

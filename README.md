@@ -31,7 +31,11 @@ npm run fetch                     # writes to the Google Sheet (needs SHEET_ID +
 npm run fetch -- --only=boards    # job boards only (Batch API scoring, half price)
 npm run fetch -- --only=ats       # watchlist ATS boards only (real-time scoring)
 npm run report                    # reply rate by source / CV variant / score band
+npm run generate                  # Phase 2: drafts for shortlisted jobs → Drafts tab + out/drafts/ (sends nothing)
+npm run generate -- --job=<id> --max=3   # only these jobs / at most 3
 ```
+
+First time only, for the PDF CV: `npx playwright install chromium`.
 
 Set up keys first: `docs/SETUP-ISLAM.md`. Copy `.env.example` to `.env`.
 
@@ -49,12 +53,15 @@ for `--local`). Any other value than `RUN` also stops it.
 | Sources, search terms, pages, watchlist seeds | `config/sources.yaml` |
 | Models, prices, batch/concurrency, run cost cap, exchange rates | `config/limits.yaml` |
 | What Haiku is asked to judge | `prompts/score.md` |
+| Draft rules: banned words/claims, allowed numbers, word counts, CV variants | `config/writing.yaml` |
+| How Sonnet writes and fact-checks drafts | `prompts/generate.md`, `prompts/fact-check.md` |
 | Facts about Islam | `docs/master-profile.md` |
 
 ## Statuses in the Jobs tab
 
 `filtered_out` (see `filter_reasons`) · `unscored` (no API key yet, or run cap reached; retried next run)
-· `score_error` · `low_score` · `maybe` · `shortlisted` · `closed` (listing gone). Later phases add `drafted`, `held`, `applied`, ….
+· `score_error` · `low_score` · `maybe` · `shortlisted` · `closed` (listing gone) · `drafted` (draft ready in Drafts) · `held` (a gate failed: see Drafts `hold_reason`). Later phases add `applied`, ….
+To redraft a job, delete its row in the Drafts tab and set its Jobs status back to `shortlisted`.
 You can edit `status` and `notes` by hand; runs keep your edits.
 
 ## Sources and their terms

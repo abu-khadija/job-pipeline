@@ -102,7 +102,30 @@ const LimitsSchema = z.object({
   fx: z.record(z.string(), z.number()),
 }).passthrough();
 
+const Range = z.object({ min: z.number(), max: z.number() });
+const WritingSchema = z.object({
+  generation: z.object({
+    maxDraftsPerRun: z.number().int().min(1),
+    maxRunCostUsd: z.number(),
+    concurrency: z.number().int().min(1),
+    companyCooldownDays: z.number(),
+  }),
+  variants: z.object({ mobile_qa: z.array(z.string()), qa_analyst: z.array(z.string()) }),
+  leadStatements: z.object({
+    ai_automation: z.array(z.number()),
+    qa_analyst: z.array(z.number()),
+    mobile_qa: z.array(z.number()),
+  }),
+  words: z.object({ coverLetter: Range, emailBody: Range, cvSummary: Range }),
+  bannedWords: z.array(z.string()),
+  bannedClaims: z.array(z.string()),
+  handBuiltVerbs: z.array(z.string()),
+  aiBuiltWork: z.array(z.string()),
+  allowedNumbers: z.array(z.number()),
+});
+
 export type Targeting = z.infer<typeof TargetingSchema>;
+export type Writing = z.infer<typeof WritingSchema>;
 export type Scoring = z.infer<typeof ScoringSchema>;
 export type Sources = z.infer<typeof SourcesSchema>;
 export type Limits = z.infer<typeof LimitsSchema>;
@@ -112,6 +135,7 @@ export interface Config {
   scoring: Scoring;
   sources: Sources;
   limits: Limits;
+  writing: Writing;
 }
 
 function load<T>(dir: string, file: string, schema: z.ZodType<T>): T {
@@ -129,5 +153,6 @@ export function loadConfig(dir = path.join(process.cwd(), "config")): Config {
     scoring: load(dir, "scoring.yaml", ScoringSchema),
     sources: load(dir, "sources.yaml", SourcesSchema),
     limits: load(dir, "limits.yaml", LimitsSchema),
+    writing: load(dir, "writing.yaml", WritingSchema),
   };
 }

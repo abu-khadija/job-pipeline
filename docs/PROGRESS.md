@@ -87,7 +87,36 @@ no Google credentials, no remote, nothing pushed. Commits use a placeholder auth
 4. `npm install`, then `docs/SETUP-ISLAM.md` part A, then `npm run fetch -- --local` to see scored jobs.
 5. Delete the folder from the work machine.
 
-## Next: Phase 2 (dry-run only)
+## Phase 2 — built Oct 3, 2026 (drafts only, nothing is sent)
 
-Generation (CV variant, cover letter, cold email with Sonnet), PDF CVs, the 8 safety gates with
-known-bad test drafts, `Drafts` tab. See PLAN section 12. Needs the API key to try for real.
+Islam asked to start applying right away, so Phase 2 was built before the exam ends. Islam applies
+by hand from the drafts; there is still no sending code.
+
+- `npm run generate`: every `shortlisted` job without a draft → read the post again from the sources
+  (descriptions are not kept in the Sheet) → Sonnet writes a CV summary, cover letter and cold email →
+  code gates → Sonnet fact check → one retry with the reasons → `Drafts` tab + `out/drafts/<company>/`
+  (`Islam-Abu-Khadija-CV.pdf`, `cover-letter.txt`, `email.txt`, `job-post.txt`).
+- The PDF CV is `docs/cv-master.md` word for word with only the Summary replaced (fact-checked).
+  Rendered with Playwright Chromium (`npx playwright install chromium` once per machine).
+- Gates: 1 fact check (model maps each claim to the profile) · 2 banned words/claims, numbers not in the
+  profile, ticket ids, AI-built work called hand-written, em dashes, salary, work authorization, word
+  counts (`config/writing.yaml`) · 3 company + role named · 4 one draft per company per 60 days ·
+  6 route (email only if literally in the post, else form/link) · 8 kill switch. Gates 5 (daily cap)
+  and 7 (form questions) are recorded as "checked at send time" until Phases 3–4.
+- Signature (name, phone, email, LinkedIn) is added by code after the gates, from `master-profile.md`.
+- 42 new tests, including 14 known-bad drafts that must fail gate 2. 288 tests in total.
+- First real run: 5 shortlisted jobs → 5 drafts, 0 held, ~$0.50.
+
+Decisions to confirm (Islam):
+
+9. **Real-time calls, not the Batch API**, for generation: only a few drafts per run, and Islam wants
+   them now. Switch later if volume grows.
+10. **Generation runs on the Mac, not in GitHub Actions:** the PDFs are local files and the service
+    account cannot store files in personal Drive.
+11. **Held or missing posts are not retried automatically.** Delete the Drafts row and set the Jobs
+    status back to `shortlisted` to redraft.
+
+## Next: calibration, then Phase 3
+
+Islam reads the drafts and writes comments in Drafts `notes`; prompts and `config/writing.yaml` are
+tuned from them. Phase 3 (Gmail sending with caps) only after that and SETUP part B.

@@ -168,6 +168,59 @@ export interface WatchRow {
 }
 export const WATCH_COLUMNS: (keyof WatchRow)[] = ["company", "ats", "slug", "added_at", "reason", "active", "last_checked"];
 
+// Phase 2. What Sonnet writes for one job. Code checks it (gates.ts) before it becomes a draft.
+export const AiDraft = z.object({
+  /** One specific detail from the post the messages refer to (gate 3 / writing rule 6). */
+  postDetail: z.string(),
+  cvSummary: z.string(),
+  coverLetter: z.string(),
+  emailSubject: z.string(),
+  emailBody: z.string(),
+});
+export type AiDraft = z.infer<typeof AiDraft>;
+
+// Gate 1. A second model pass maps every claim to a line of the master profile.
+export const AiFactCheck = z.object({
+  claims: z.array(z.object({
+    claim: z.string(),
+    /** The master-profile or CV line that supports the claim, quoted; "" if none. */
+    source: z.string(),
+    supported: z.boolean(),
+  })),
+});
+export type AiFactCheck = z.infer<typeof AiFactCheck>;
+
+export type CvVariant = "ai_automation" | "qa_analyst" | "mobile_qa";
+
+/** One row in the Drafts tab. Islam reads these at calibration and writes in `notes`. */
+export interface DraftRow {
+  job_id: string;
+  created_at: string;
+  status: string;        // draft | held | skipped | applied (Islam sets applied after sending by hand)
+  hold_reason: string;
+  company: string;
+  title: string;
+  score: number | "";
+  cv_variant: string;
+  route: string;         // email | form | link
+  apply_to: string;      // the address (only if literally in the post) or the application URL
+  email_subject: string;
+  email_body: string;
+  cover_letter: string;
+  cv_summary: string;
+  post_detail: string;
+  files: string;         // local folder with the PDF CV and texts (out/drafts/...)
+  gates: string;
+  unsupported_claims: string;
+  cost_usd_est: number | "";
+  notes: string;
+}
+export const DRAFT_COLUMNS: (keyof DraftRow)[] = [
+  "job_id", "created_at", "status", "hold_reason", "company", "title", "score", "cv_variant", "route",
+  "apply_to", "email_subject", "email_body", "cover_letter", "cv_summary", "post_detail", "files",
+  "gates", "unsupported_claims", "cost_usd_est", "notes",
+];
+
 /** A strong job where a referral from someone inside would help. Islam searches by hand. */
 export interface ReferralRow {
   job_id: string;

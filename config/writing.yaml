@@ -1,0 +1,42 @@
+# Phase 2: drafts (CV summary, cover letter, cold email) and the checks they must pass.
+# Facts come only from docs/master-profile.md. These lists catch what the fact check might miss.
+
+generation:
+  maxDraftsPerRun: 10       # safety cap on jobs drafted in one run
+  maxRunCostUsd: 2          # stop drafting if one run's estimated cost passes this
+  concurrency: 3            # parallel jobs
+  companyCooldownDays: 60   # gate 4: one draft per company in this window
+
+# Which CV variant leads (docs/cv-master.md → "CV variants"). First match on the job TITLE wins;
+# no match → ai_automation.
+variants:
+  mobile_qa: ["mobile", "ios", "android", "appium", "react native", "flutter"]
+  qa_analyst: ["analyst", "manual", "uat", "tester", "test lead", "quality assurance lead", "qa lead", "test manager"]
+leadStatements:             # approved statement numbers (master-profile.md) to lead with
+  ai_automation: [1, 8, 3, 13, 2]
+  qa_analyst: [7, 12, 6, 10, 11]
+  mobile_qa: [5, 2, 12, 1]
+
+words:
+  coverLetter: { min: 150, max: 220 }
+  emailBody: { min: 90, max: 130 }
+  cvSummary: { min: 35, max: 90 }
+
+# Gate 2. Case-insensitive.
+bannedWords: ["thrilled", "passionate", "leverage", "leveraging", "synergy", "excited to", "rockstar", "ninja"]
+bannedClaims:
+  - "docker"
+  - "kubernetes"
+  - "\\bk8s\\b"
+  - "\\b284\\b"
+  - "(built|building|set up|created|designed)\\s+(the\\s+|a\\s+|our\\s+)?ci/?cd\\s+pipelines?"
+  - "authori[sz]ed to work in"
+  - "\\b(us|u\\.s\\.) citizen"
+  - "\\bsalary\\b"
+  - "\\$\\s?\\d"
+  - "\\busd\\b"
+# Verbs that must not sit next to AI-built work (master-profile "Designed and directed" row).
+handBuiltVerbs: ["wrote", "written", "coded", "hand-coded", "programmed", "implemented", "developed", "built"]
+aiBuiltWork: ["playwright", "qax", "test-case generator", "test case generator", "k6", "visual regression", "typescript framework", "automation framework"]
+# Numbers allowed in generated text (master-profile "Allowed numbers" + education years).
+allowedNumbers: [3, 5, 122, 15, 200, 100, 2017, 2021, 2022, 2023, 2025, 2026, 30]

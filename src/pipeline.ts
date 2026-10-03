@@ -92,7 +92,7 @@ function byFreshness(a: Job, b: Job): number {
   return (Date.parse(b.postedAt ?? "") || 0) - (Date.parse(a.postedAt ?? "") || 0);
 }
 
-async function fetchAtsBoards(cfg: Config, get: HttpGet, watch: WatchRow[], nowIso: string, errors: string[]): Promise<RawJob[]> {
+export async function fetchAtsBoards(cfg: Config, get: HttpGet, watch: WatchRow[], nowIso: string, errors: string[]): Promise<RawJob[]> {
   const boards = activeBoards(watch);
   const out: RawJob[] = [];
   await pool(boards, cfg.limits.scoring.concurrency, async ({ board, company }) => {
