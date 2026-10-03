@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:media="http://search.yahoo.com/mrss">
+  <channel>
+    <title>We Work Remotely: Remote jobs in design, programming, marketing and more</title>
+    <link>https://weworkremotely.com/remote-jobs.rss</link>
+    <description>We Work Remotely: Remote jobs in design, programming, marketing and more</description>
+    <language>en-US</language>
+    <ttl>60</ttl>
+    <item>
+      <media:content url="https://wwr-pro.s3.amazonaws.com/logos/0171/6506/logo.gif" type="image/png"/>
+      <title>Clover Health: Chief Actuary</title>
+      <region>Anywhere in the World</region>
+      <country>🇺🇸 United States of America</country>
+      <state>California</state>
+      <skills></skills>
+      <category>Management and Finance</category>
+      <type>Full-Time</type>
+      <description>&lt;img src="https://we-work-remotely.imgix.net/logos/0171/6506/logo.gif?ixlib=rails-4.0.0&amp;w=50&amp;h=50&amp;dpr=2&amp;fit=fill&amp;auto=compress" /&gt;
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; NY, United States
+    &lt;br /&gt;&lt;strong&gt;URL:&lt;/strong&gt; &lt;a href="https://www.cloverhealth.com/"&gt;https://www.cloverhealth.com/&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;div class="job__header"&gt;
+&lt;div class="job__title"&gt;
+&lt;h1 class="section-header section-header--large font-primary"&gt;Chief Actuary&lt;/h1&gt;
+&lt;div class="job__location"&gt;
+&lt;div&gt;Remote - USA&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="job__description body"&gt;
+&lt;div&gt;
+&lt;p&gt;The Finance team at Clover Health is a group of strategic partners providing financial and operational insights that drive informed decision-making and efficient capital allocation. Guided by our core values of excellence, accountability, and collaboration, we provide actionable recommendations to improve health outcomes and reduce costs while ensuring financial integrity and innovation.&lt;br&gt;&lt;br&gt;Actuarial is at the center of some of Clover's most important decisions—from pricing and forecasting to reserving, medical economics, and long-term strategy. As Chief Actuary, you'll lead and evolve this function during a pivotal stage of the company's growth, helping shape how we deploy AI, automation, and advanced analytics to improve decision-making across the business.&lt;br&gt;&lt;br&gt;This isn't a traditional Chief Actuary role. We're looking for someone who can combine deep actuarial expertise with modern technology, building AI-enabled workflows that transform how actuarial work gets done while maintaining the rigor, transparency, and governance required in a highly regulated environment. You'll partner closely with leaders across Finance, Clinical, Growth, Operations, and Product to influence company strategy while building a best-in-class actuarial organization.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;As a Chief Actuary, you will:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Lead Clover's enterprise actuarial function, including pricing, forecasting, reserving, medical economics, Part D, Stars analytics, and bid strategy.&lt;/li&gt;
+&lt;li&gt;Establish the long-term vision for actuarial, modernizing the function through AI, automation, and scalable analytical infrastructure.&amp;nbsp;&lt;/li&gt;
+&lt;li&gt;&amp;nbsp;Build AI-enabled workflows that reduce manual effort, accelerate insight generation, and improve actuarial decision-making while ensuring explainability, governance, and regulatory compliance.&lt;/li&gt;
+&lt;li&gt;Lead the annual Medicare Advantage bid strategy and pricing process, framing tradeoffs among growth, competitiveness, margin, risk, and capital requirements to support enterprise planning and executive decision-making.&lt;/li&gt;
+&lt;li&gt;Assume responsibility for actuarial opinions, reserve adequacy, and related regulatory </description>
+      <pubDate>Fri, 02 Oct 2026 01:24:37 +0000</pubDate>
+      <expires_at>Sun, 01 Nov 2026 01:24:37 +0000</expires_at>
+      <guid>https://weworkremotely.com/remote-jobs/clover-health-chief-actuary</guid>
+      <link>https://weworkremotely.com/remote-jobs/clover-health-chief-actuary</link>
+    </item>
+<item>
+      <media:content url="https://wwr-pro.s3.amazonaws.com/logos/0171/6505/logo.gif" type="image/png"/>
+      <title>LawnStarter: Analytics Engineering Manager, Data Platform &amp; Governance</title>
+      <region>Anywhere in the World</region>
+      <country></country>
+      <state></state>
+      <skills></skills>
+      <category>All Other Remote</category>
+      <type>Full-Time</type>
+      <description>&lt;img src="https://we-work-remotely.imgix.net/logos/0171/6505/logo.gif?ixlib=rails-4.0.0&amp;w=50&amp;h=50&amp;dpr=2&amp;fit=fill&amp;auto=compress" /&gt;
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; Mexico
+    &lt;br /&gt;&lt;strong&gt;URL:&lt;/strong&gt; &lt;a href="http://lawnstarter.com"&gt;http://lawnstarter.com&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;p&gt;About LawnStarter&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/lawnstarter/brain/blob/main/docs/job-descriptions/data-governance-platform-manager.md#about-lawnstarter" class="external"&gt;&lt;/a&gt;LawnStarter is the nation's leading on-demand marketplace for lawn care and outdoor services, with over $150M in annual bookings. We're expanding beyond lawn care to become the one-stop shop for all home services, operating across three brands (LawnStarter, Lawn Love, Home Gnome) on a single shared platform.&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
+&lt;p&gt;About Analytics at LawnStarter&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/lawnstarter/brain/blob/main/docs/job-descriptions/data-governance-platform-manager.md#about-analytics-at-lawnstarter" class="external"&gt;&lt;/a&gt;We're a small, senior analytics team supporting the entire company, product, marketing, operations, and finance all run on the data we serve. The foundation is solid: a centralized Redshift data warehouse where all source data lands, modeled in dbt and orchestrated by Airflow, with Segment feeding event data in. You won't be stitching scattered sources together, the platform exists; your job is to make it trustworthy and keep it that way. We're mid-migration to Lightdash as our single BI platform, replacing Tableau and Metabase.&lt;/p&gt;
+&lt;p&gt;Here's the honest gap: everyone on the team today is an analyst. Data quality, tracking standards, and platform hygiene get done as side work, squeezed between analyses. Nobody wakes up thinking about them, which is exactly the job we're hiring for.&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
+&lt;p&gt;The Role&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/lawnstarter/brain/blob/main/docs/job-descriptions/data-governance-platform-manager.md#the-role" class="external"&gt;&lt;/a&gt;You'll be the first person at LawnStarter dedicated to data governance, the owner of whether our data can be trusted, and of the roadmap that makes it more trustworthy every quarter. Trust means the quality and freshness of our source data, pipelines, and reports; the definitions behind our metrics; the standards behind our Segment event tracking; the health of our Lightdash workspace; the data feeding our machine learning models; and the security of the data itself. The roadmap means sitting with product, marketing, ops, and finance to understand what the business needs from data, turning that into priorities for the platform, and sequencing the work, yours and, soon, your team's.&lt;/p&gt;
+&lt;p&gt;This is a hands-on role, every manager at LawnStarter builds, and this one is no exception. You'll start solo, with th</description>
+      <pubDate>Thu, 01 Oct 2026 20:23:10 +0000</pubDate>
+      <expires_at>Sat, 31 Oct 2026 20:23:10 +0000</expires_at>
+      <guid>https://weworkremotely.com/remote-jobs/lawnstarter-analytics-engineering-manager-data-platform-governance-2</guid>
+      <link>https://weworkremotely.com/remote-jobs/lawnstarter-analytics-engineering-manager-data-platform-governance-2</link>
+    </item>
+<item>
+      <media:content url="https://wwr-pro.s3.amazonaws.com/logos/0171/6502/logo.gif" type="image/png"/>
+      <title>Limitless Technology: Japanese Speaking Customer Service Agent - for Netflix Japan</title>
+      <region>Anywhere in the World</region>
+      <country></country>
+      <state>Lancashire</state>
+      <skills></skills>
+      <category>Customer Support</category>
+      <type>Full-Time</type>
+      <description>&lt;img src="https://we-work-remotely.imgix.net/logos/0171/6502/logo.gif?ixlib=rails-4.0.0&amp;w=50&amp;h=50&amp;dpr=2&amp;fit=fill&amp;auto=compress" /&gt;
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; London
+    &lt;br /&gt;&lt;strong&gt;URL:&lt;/strong&gt; &lt;a href="https://www.limitlesstech.com/"&gt;https://www.limitlesstech.com/&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Limitless, in partnership with Netflix, is looking for Japanese-speaking freelance customer service representatives to support Netflix customers in Japan.&lt;/p&gt;
+&lt;p&gt;This is a fully remote freelance opportunity for people who are confident speaking with customers, comfortable using online systems and able to work independently from home.&lt;/p&gt;
+&lt;p&gt;You will provide voice-based customer support to Netflix customers, helping with account queries, service questions, technical issues and general support. You will use Netflix systems, knowledge resources and agreed support processes to provide clear, accurate and friendly resolutions.&lt;/p&gt;
+&lt;p&gt;Key responsibilities include:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Providing customer support in Japanese by voice&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Helping customers with account, service and technical queries&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Following Netflix support processes and quality standards&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Using online systems and knowledge tools to resolve customer issues&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Delivering a professional, friendly and efficient customer experience&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Completing required training, assessments and programme updates&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Working independently from home while staying connected with the wider support team&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;What we are looking for:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Fluent or near-native Japanese language ability&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Strong spoken communication skills&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;Comfortable supporting customers by phone&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Confident using online systems and digital tools&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Reliable internet connection and suitable home working environment&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Ability to work independently and follow defined processes&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Customer service experience is useful but not essential&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Training:&lt;/p&gt;
+&lt;p&gt;Training starts on 9th October 2026 and runs for four weeks, Monday to Friday, from 13:00 to 17:00 Japan Standard Time.&lt;/p&gt;
+&lt;p&gt;Training is delivered virtually in Japanese and attendance across the fixed training schedule is required.&lt;/p&gt;
+&lt;p&gt;Working hours:&lt;/p&gt;
+&lt;p&gt;Once live, the current available service windows are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Monday to</description>
+      <pubDate>Thu, 01 Oct 2026 08:39:07 +0000</pubDate>
+      <expires_at>Sat, 31 Oct 2026 08:39:07 +0000</expires_at>
+      <guid>https://weworkremotely.com/remote-jobs/limitless-technology-japanese-speaking-customer-service-agent-for-netflix-japan</guid>
+      <link>https://weworkremotely.com/remote-jobs/limitless-technology-japanese-speaking-customer-service-agent-for-netflix-japan</link>
+    </item>
+<item>
+      <title>Melio: Senior Account Executive - UHV Payors</title>
+      <region>Anywhere in the World</region>
+      <country></country>
+      <state></state>
+      <skills></skills>
+      <category>Sales and Marketing</category>
+      <type>Full-Time</type>
+      <description>
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; Remote, US
+&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Senior Account Executive - UHV Payors&lt;br&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;Remote&amp;nbsp;(required to live in one of the following states: AZ, CO, FL, GA, IL, MI, MN, NY, NC, TX, UT,VT)&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Qualifications:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;4+ years of proven success in outbound sales and high-level account management, specifically closing net-new business.&lt;/li&gt;
+&lt;li&gt;Strong experience in a Mid-Market sales motion, demonstrating the ability to navigate longer, more complex deal cycles and break into executive teams (VP to C-Suite).&lt;/li&gt;
+&lt;li&gt;Exceptional sales acumen with a deep command of pipeline management. You require minimal hand-holding, ramp up quickly, and know how to independently unblock deals.&lt;/li&gt;
+&lt;li&gt;Skilled in selling complex solutions, including SaaS, cash flow tools, or payments products, ideally in a startup or fintech environment. &lt;strong&gt;Bonus:&lt;/strong&gt; A strong understanding of the payments ecosystem and the high-volume credit cards space is highly preferred and will give you a major edge.&lt;/li&gt;
+&lt;li&gt;A track record of consistently exceeding targets with clear, quantifiable achievements (e.g., % over quota, revenue booked, average deal size).&lt;/li&gt;
+&lt;li&gt;Advanced outbound thinker: You don't just execute cadences; you build highly strategic, multi-threaded outbound campaigns to crack into target accounts.&lt;/li&gt;
+&lt;li&gt;A collaborative team player who proactively shares winning tactics and market feedback with peers, Product, Marketing, and Enablement.&lt;/li&gt;
+&lt;li&gt;Experience with our target verticals (Wholesalers, Retail, Software, Logistics, and Construction) is a strong plus.&lt;/li&gt;
+&lt;li&gt;Power user of sales tools like Salesforce, Outreach, Gong, Apollo, and LinkedIn Sales Navigator.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;A day in the life and how you’ll make an impact:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Hunt and close complex business: Drive strategic outbound prospecting to identify, engage, and win ultra high-value customers with longer consideration phases.&lt;/li&gt;
+&lt;li&gt;Navigate multi-stakeholder deals: Seamlessly manage the full sales cycle, engaging with buying groups at all levels—from operators up to the C-suite.&lt;/li&gt;
+&lt;li&gt;Deliver advanced, tailored product demos that connect Melio's value directly to high-level business metrics like cash flow, operational efficiency, and ROI.&lt;/li&gt;
+&lt;li&gt;Manage pipeline with precision: Maintain rigorous Salesforce hygiene and provide accurate forecasting to leadership.&lt;/li&gt;
+&lt;li&gt;Host executive Google Meet meetings and occasionally travel for trade shows, conferences, or strategic client visits.&lt;/li&gt;
+&lt;li&gt;Consistently exceed monthly and quarterly targets, </description>
+      <pubDate>Thu, 01 Oct 2026 07:31:05 +0000</pubDate>
+      <expires_at>Sat, 31 Oct 2026 07:31:05 +0000</expires_at>
+      <guid>https://weworkremotely.com/remote-jobs/melio-senior-account-executive-uhv-payors</guid>
+      <link>https://weworkremotely.com/remote-jobs/melio-senior-account-executive-uhv-payors</link>
+    </item>
+<item>
+      <title>Hex Technologies: Manager, Enterprise Sales</title>
+      <region>Anywhere in the World</region>
+      <country></country>
+      <state></state>
+      <skills></skills>
+      <category>Sales and Marketing</category>
+      <type>Full-Time</type>
+      <description>
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; SF or Remote (PST)
+&lt;/p&gt;
+
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;h3&gt;&lt;strong&gt;About the Role&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;Hex is one of the fastest-growing AI-native data platforms, and enterprise is our next frontier: we're expanding beyond early adopters and digital-native customers to win the largest, most established organizations in the market. We're hiring an Enterprise Sales Manager to lead and build out the western portion of our Enterprise AE team as we scale into this next phase of growth. This is a true build role: you'll shape how we hire, ramp, and coach Enterprise AEs, and play a defining role in how Hex shows up in your market, from positioning to executive relationships to partner presence. You'll coach a team through high velocity, complex, multi stakeholder sales cycles, acting as a strategic partner to your reps as they navigate competitive, high stakes deals.&lt;/p&gt;
+&lt;h3&gt;&lt;strong&gt;What you will do&lt;/strong&gt;&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Recruit, hire, and ramp a growing Enterprise AE team, building a repeatable onboarding and coaching program.&lt;/li&gt;
+&lt;li&gt;Coach reps through complex, multi stakeholder enterprise deals, from new pipeline generation to existing account growth, running deal reviews and call coaching that improve win rate and velocity.&lt;/li&gt;
+&lt;li&gt;Establish operating rhythms (1:1s, pipeline reviews, QBRs, call reviews) and coaching frameworks that raise team performance.&lt;/li&gt;
+&lt;li&gt;Partner cross functionally with RevOps, SDR, Marketing, and Product to sharpen lead quality, territory and account strategy, and sales tooling.&lt;/li&gt;
+&lt;li&gt;Help define how Hex goes to market with the largest organizations in our space, shaping positioning, buyer strategy, and executive relationships in your territory.&lt;/li&gt;
+&lt;li&gt;Travel as needed for QBRs, customer meetings, and team development.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;&lt;strong&gt;Who you might be&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;You might be a fit for this role if you have:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A track record managing sellers through high velocity enterprise sales, both new pipeline generation and growing existing accounts, with 3+ years managing and scaling quota carrying AE teams in B2B SaaS.&lt;/li&gt;
+&lt;li&gt;Experience as a strategic deal navigator, coaching reps through complex, competitive, multi threaded deals.&lt;/li&gt;
+&lt;li&gt;Prior IC closing experience in complex, technical sales cycles (trial led motions a plus), and familiarity selling AI, data, or analytics solutions&lt;/li&gt;
+&lt;li&gt;Startup experience is a plus: we're looking for a creative problem solver who can build, not just operate inside a structured org already in place.&lt;/li&gt;
+&lt;li&gt;A consistent track record of hiring, developing, and retaining strong performers.&lt;/li&gt;
+&lt;li&gt;Strong operational rigor: forecasting, pipeline managemen</description>
+      <pubDate>Thu, 01 Oct 2026 07:30:57 +0000</pubDate>
+      <expires_at>Sat, 31 Oct 2026 07:30:57 +0000</expires_at>
+      <guid>https://weworkremotely.com/remote-jobs/hex-technologies-manager-enterprise-sales</guid>
+      <link>https://weworkremotely.com/remote-jobs/hex-technologies-manager-enterprise-sales</link>
+    </item>
+<item>
+      <title>Doximity: Marketing Coordinator</title>
+      <region>Anywhere in the World</region>
+      <country></country>
+      <state></state>
+      <skills></skills>
+      <category>All Other Remote</category>
+      <type>Full-Time</type>
+      <description>
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; San Francisco, CA or Remote (U.S.)
+&lt;/p&gt;
+
+&lt;p&gt;Doximity is the leading clinical AI company with the largest network of U.S. clinicians. Doximity’s AI-powered workflow platform is trusted by over 85% of U.S. physicians and 300+ health systems. Doximity's mission is to help clinicians be more productive so they can provide better care for their patients.&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;At Doximity, we value curiosity, ownership, inclusion, and a commitment to making a meaningful impact. If you're excited about solving complex problems that improve healthcare, we'd love to hear from you.&lt;/p&gt;
+&lt;p&gt;As a Marketing Coordinator, you are an integral part of our Commercial Marketing team. You'll collaborate directly with our sales force, developing custom marketing materials that drive sales growth among our largest customers.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;This job can be filled in our San Francisco headquarters or remotely within the U.S.&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;h3&gt;&lt;strong&gt;How you’ll make an impact&amp;nbsp;&lt;/strong&gt;&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Design custom materials including slides, one pagers and videos for the Sales team to leverage during client meetings&lt;/li&gt;
+&lt;li&gt;Collaborate with the Analytics team to extract custom metrics and gather client-specific data to develop compelling personalized presentations for meetings&lt;/li&gt;
+&lt;li&gt;Support Marketing &amp;amp; Sales throughout the sales lifecycle by providing presentations, pitch decks, RFPs, and results decks&lt;/li&gt;
+&lt;li&gt;Provide proposals, or any custom slides and content&lt;/li&gt;
+&lt;li&gt;Create marketing materials for in-person and virtual team meetings with up to 200 attendees, and help build templates to be leveraged by the entire commercial business&lt;/li&gt;
+&lt;li&gt;Assist Marketing team in creation of collateral, templates or other projects to support the commercial business&lt;/li&gt;
+&lt;li&gt;Provide strategic partnership to Sales and SalesHub team members&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;&lt;strong&gt;What we’re looking for:&lt;/strong&gt;&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Critical Thinker.&lt;/strong&gt; You apply what you know to problems you haven’t seen before. You look for creative angles, and you communicate clearly in writing and out loud.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Self-Starter.&lt;/strong&gt; You manage your own time and move work forward without waiting to be asked.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Collaborative Partner.&lt;/strong&gt; You build relationships across teams. You listen for what the deal actually needs rather than waiting for a request.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Curiosity.&lt;/strong&gt; You want to understand the customer, the market behind the ask and the internal mechanisms, not just the ask itself.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Design Craft.&lt;/strong&gt; You know your way a</description>
+      <pubDate>Thu, 01 Oct 2026 07:30:57 +0000</pubDate>
+      <expires_at>Sat, 31 Oct 2026 07:30:57 +0000</expires_at>
+      <guid>https://weworkremotely.com/remote-jobs/doximity-marketing-coordinator</guid>
+      <link>https://weworkremotely.com/remote-jobs/doximity-marketing-coordinator</link>
+    </item>
+<item>
+      <title>Melio: Senior Account Executive, Strategic Partnerships &amp; Affiliates</title>
+      <region>Anywhere in the World</region>
+      <country></country>
+      <state></state>
+      <skills></skills>
+      <category>Sales and Marketing</category>
+      <type>Full-Time</type>
+      <description>
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; Remote, US
+&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Senior Account Executive, Strategic Partnerships &amp;amp; Affiliates&lt;br&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;Location:&lt;/em&gt;&lt;em&gt; Remote&amp;nbsp;(required to live in one of the following states: AZ, CO, FL, GA, IL, MI, MN, NY, NC, TX, UT,VT)&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Qualifications:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;4+ years of sales or partnership experience&lt;/strong&gt;, ideally in a role where you had to build a book of business from scratch.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;A "Hunter-Farmer" Hybrid:&lt;/strong&gt; You are fearless when cold calling potential partners to pitch a revenue-share opportunity, but you also possess the empathy and organization to nurture those relationships into a productive community over time.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Thrives in Ambiguity:&lt;/strong&gt; You don’t need a playbook—you want to write it. You are comfortable testing new pitches, identifying new vertical targets (e.g., insurance, logistics consultants), and pivoting quickly based on what works.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Creative &amp;amp; Scrappy:&lt;/strong&gt; You can see the angle that others miss. You understand how to frame a value proposition not just to a user, but to a partner looking to monetize their influence.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Community Builder Mindset:&lt;/strong&gt; You understand that signing a partner is just day one. You know how to keep affiliates engaged, excited, and producing leads through constant communication and value-add interactions.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Genuinely Curious about Business Models:&lt;/strong&gt; You need to understand how &lt;em&gt;our partners&lt;/em&gt; make money (e.g., how a Credit Card Points Consultant operates) to effectively pitch how Melio fits into their ecosystem.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Proficiency in SalesForce, Outreach.io, and LinkedIn Sales Navigator.&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;A day in the life and how you’ll make an impact:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Identify &amp;amp; Recruit (The Hunt)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Prospect and Cold Call: You will aggressively hunt for high-leverage affiliates—think Credit Card Points Consultants, Insurance Brokers who don't accept cards, or Industry-Specific Consultants.&lt;/li&gt;
+&lt;li&gt;Pitch the "Business in a Box": You aren't just selling software; you are selling a revenue stream. You will convince these partners that referring their high-spend clients to Melio is a lucrative way to monetize their existing relationships through our Gross Profit revenue share model.&lt;/li&gt;
+&lt;li&gt;Creative Sourcing: You will experiment with different verticals to find the "hidden gems"—partners who have trusted access to UHV companies but haven't monetized that influence yet.&lt</description>
+      <pubDate>Thu, 01 Oct 2026 07:30:56 +0000</pubDate>
+      <expires_at>Sat, 31 Oct 2026 07:30:56 +0000</expires_at>
+      <guid>https://weworkremotely.com/remote-jobs/melio-senior-account-executive-strategic-partnerships-affiliates</guid>
+      <link>https://weworkremotely.com/remote-jobs/melio-senior-account-executive-strategic-partnerships-affiliates</link>
+    </item>
+<item>
+      <title>Doximity: Commercial Data Scientist</title>
+      <region>Anywhere in the World</region>
+      <country></country>
+      <state></state>
+      <skills></skills>
+      <category>Full-Stack Programming</category>
+      <type>Full-Time</type>
+      <description>
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; San Francisco, CA or Remote (U.S.)
+&lt;/p&gt;
+
+&lt;h3&gt;&lt;strong&gt;Commercial Data Scientist&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;Doximity is the leading clinical AI company with the largest network of U.S. clinicians. Doximity’s AI-powered workflow platform is trusted by over 85% of U.S. physicians and 300+ health systems. Doximity's mission is to help clinicians be more productive so they can provide better care for their patients.&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;At Doximity, we value curiosity, ownership, inclusion, and a commitment to making a meaningful impact. If you're excited about solving complex problems that improve healthcare, we'd love to hear from you.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;em&gt;This role can be filled in the Northeast (New York, NJ, Philadelphia, Boston), our San Francisco headquarters, OR other remote locations in the U.S.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;As a Commercial Data Scientist&lt;/strong&gt;, you’ll work within cross-functional delivery teams alongside other analysts, engineers, and commercial stakeholders in discovering data insights to help improve healthcare.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;How you’ll make an impact:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Deliver novel and impactful insights for client organizations using machine learning and AI technologies.&lt;/li&gt;
+&lt;li&gt;Work closely with our Product, Platform Data, Insights &amp;amp; Strategy, and Sales teams to create client-facing analyses.&lt;/li&gt;
+&lt;li&gt;Showcase your engineering skills by creating data products from scratch and automating code so they can be re-used by other teammates and future projects.&lt;/li&gt;
+&lt;li&gt;Leverage Doximity's extensive datasets to identify and classify behavioral patterns of medical professionals on our platform.&lt;/li&gt;
+&lt;li&gt;Embrace the challenge of a fast-paced environment to exceed client expectations&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The Core Values of the Client Intelligence team&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;As an organization we value diversity - &lt;/strong&gt;in backgrounds and in experiences. Healthcare is a universal concern, and we need people from all backgrounds to help build a better future for all. Below are additional core values specific to the Insights Team.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Collaboration&lt;/strong&gt;—The best candidates and teammates are not only strong in their own aptitudes but care deeply about supporting each other's growth.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Passion for Data&lt;/strong&gt;—You’re going to help our clients and team members with data-driven decision making. We need someone that can manipulate millions of rows of data and also ask the right questions to find the important insights.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Reliability&lt;/strong&gt; – Our team is efficient, flexible, and agile only b</description>
+      <pubDate>Thu, 01 Oct 2026 07:30:56 +0000</pubDate>
+      <expires_at>Sat, 31 Oct 2026 07:30:56 +0000</expires_at>
+      <guid>https://weworkremotely.com/remote-jobs/doximity-commercial-data-scientist</guid>
+      <link>https://weworkremotely.com/remote-jobs/doximity-commercial-data-scientist</link>
+    </item>
+</channel>
+</rss>

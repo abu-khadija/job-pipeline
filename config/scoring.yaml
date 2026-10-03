@@ -1,0 +1,31 @@
+# Scoring weights (total 100). Code computes salary and freshness; Haiku the rest.
+
+applyThreshold: 70
+maybeThreshold: 60
+
+weights:
+  roleFit: 30          # P1/P2 up to 30, P3 up to 20
+  roleFitP3Cap: 20
+  stackMatch: 25
+  salary: 20
+  domain: 10
+  interviewRisk: 10
+  freshness: 5
+
+salaryPoints:          # USD per month, uses the max of the posted range
+  tiers:
+    - { min: 5000, points: 20 }
+    - { min: 3000, points: 18 }
+    - { min: 2000, points: 12 }
+  notStated: 10
+
+freshnessPoints:
+  tiers:
+    - { maxDays: 7, points: 5 }
+    - { maxDays: 14, points: 3 }
+  older: 0
+
+typeB:
+  # "Testing AI products" roles. Set penaltyEnabled: false once the public eval portfolio project exists.
+  penaltyEnabled: true
+  penalty: 10

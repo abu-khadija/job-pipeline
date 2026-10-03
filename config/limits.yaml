@@ -1,0 +1,42 @@
+# Models, caps and money. Re-check model ids and prices on claude.com/pricing now and then.
+
+models:
+  score: claude-haiku-4-5
+  classify: claude-haiku-4-5
+  write: claude-sonnet-5-5
+  factCheck: claude-sonnet-5-5
+
+# USD per million tokens, used only to estimate cost in the Runs tab.
+prices:
+  claude-haiku-4-5: { inputPerMTok: 1, outputPerMTok: 5 }
+  claude-sonnet-5-5: { inputPerMTok: 2, outputPerMTok: 10 }
+
+maxRunCostUsd: 3          # stop scoring if one run's estimated cost passes this
+maxScoredPerRun: 150      # safety cap on model calls per run
+maxDescriptionChars: 8000
+
+sending:                  # used from Phase 3
+  maxApplicationsPerDay: 15
+  maxFollowUpsPerDay: 10
+  workingHoursUtc: { start: 7, end: 19 }   # spread sends across this window
+  followUpAfterDays: 6
+  maxFollowUps: 1
+
+perCompanyLimits:
+  defaultCooldownDays: 60
+  special:
+    - { company: deel, maxApplications: 3, windowDays: 60 }
+
+salaryAnswer:
+  rule: "top of posted range, else this value"
+  defaultUsdMonth: 3500
+
+fx:                       # USD per 1 unit. Approximate; Islam updates monthly.
+  USD: 1
+  EUR: 1.08
+  GBP: 1.27
+  CAD: 0.73
+  AUD: 0.66
+  CHF: 1.12
+  PLN: 0.25
+  INR: 0.012

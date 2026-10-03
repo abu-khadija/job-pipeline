@@ -1,0 +1,43 @@
+# Job sources. Endpoints were checked on Oct 2, 2026; details in docs/SOURCES-VERIFIED.md.
+
+userAgent: "job-pipeline (personal job search; contact: TODO_PERSONAL_GMAIL)"
+timeoutMs: 20000
+retries: 2
+
+sources:
+  himalayas:
+    enabled: true
+    # Search endpoint, filtered to jobs open to candidates in Egypt. 20 jobs per page (fixed by Himalayas).
+    url: "https://himalayas.app/jobs/api/search"
+    country: EG
+    queries: [qa engineer, quality assurance, test automation, sdet, software tester, qa analyst]
+    maxPagesPerQuery: 5
+  remoteok:
+    enabled: true
+    # Returns the latest ~100 jobs. First element is a legal notice; link back to Remote OK.
+    url: "https://remoteok.com/api"
+  remotive:
+    enabled: true
+    # Remotive asks for max 4 calls per day. 2 calls per run x 2 runs = 4.
+    url: "https://remotive.com/api/remote-jobs"
+    requests:
+      - { category: qa }
+      - { search: test automation }
+  weworkremotely:
+    enabled: true
+    # The main feed shows ~10 jobs per category, so category feeds are added. No QA category exists.
+    feeds:
+      - "https://weworkremotely.com/remote-jobs.rss"
+      - "https://weworkremotely.com/categories/remote-programming-jobs.rss"
+      - "https://weworkremotely.com/categories/remote-full-stack-programming-jobs.rss"
+      - "https://weworkremotely.com/categories/all-other-remote-jobs.rss"
+      - "https://weworkremotely.com/categories/remote-devops-sysadmin-jobs.rss"
+
+  # Phase 1b, not built yet
+  jobicy: { enabled: false }
+  arbeitnow: { enabled: false, url: "https://www.arbeitnow.com/api/job-board-api" }
+  workingnomads: { enabled: false }
+  hackernews: { enabled: false }
+
+# Phase 4+: companies whose Greenhouse/Lever/Ashby boards are polled twice daily.
+watchlist: []

@@ -1,0 +1,131 @@
+# Targeting rules. Islam edits this file; code reads it. Matching is case-insensitive.
+
+titles:
+  # Priority 1: full role-fit points (30)
+  p1:
+    - ai qa engineer
+    - qa ai engineer
+    - ai-first qa engineer
+    - ai native qa engineer
+    - ai-native quality engineer
+    - ai-assisted qa engineer
+    - agentic qa engineer
+    - qa engineer (ai)
+  # Priority 2: full role-fit points (30)
+  p2:
+    - qa automation engineer
+    - test automation engineer
+    - automation qa engineer
+    - playwright engineer
+    - quality engineer
+    - sdet
+    - software development engineer in test
+    - software engineer in test
+    - qa engineer
+    - software qa engineer
+    - quality assurance engineer
+    - ai testing engineer
+    - llm qa engineer
+    - ai quality engineer
+    - ai evaluation engineer
+    - genai qa engineer
+    - conversational ai qa
+  # Priority 3: role-fit capped at 20
+  p3:
+    - qa analyst
+    - mobile qa engineer
+    - qa tester
+    - software tester
+    - manual and automation qa
+    - qa specialist
+    - test engineer
+    - release qa engineer
+  # Skip always wins
+  skip:
+    - qa lead
+    - lead qa
+    - qa manager
+    - manager
+    - head of qa
+    - tech lead
+    - team lead
+    - vp
+    - head of quality
+    - director
+    - principal
+    - staff sdet
+    - staff engineer
+    - ml engineer
+    - machine learning engineer
+    - data labeler
+    - data annotator
+
+# Cheap pre-filter at fetch time: keep a job only if the title contains one of these.
+prefilterTitleKeywords: [qa, quality, test, tester, testing, sdet, automation engineer, playwright]
+
+location:
+  # Any of these → eligible (unless a reject phrase also appears)
+  accept:
+    - worldwide
+    - anywhere
+    - global
+    - emea
+    - africa
+    - mena
+    - middle east
+    - egypt
+    - remote (any)
+    - all countries
+    - work from anywhere
+  eorSignals: [deel, remote.com, oyster, rippling, employer of record, eor, contractor]
+  # Any of these → drop
+  reject:
+    - us only
+    - usa only
+    - united states only
+    - u.s. only
+    - must be authorized to work in
+    - authorized to work in the united states
+    - must reside in
+    - must be located in the us
+    - must be based in the us
+    - us citizens
+    - green card
+    - security clearance
+    - canada only
+    - uk only
+    - eu only
+    - europe only
+    - latam only
+    - americas only
+    - north america only
+
+redFlags:
+  - pay a fee
+  - registration fee
+  - training fee
+  - buy equipment
+  - purchase equipment
+  - send your id
+  - passport copy
+  - bank details
+  - telegram only
+  - whatsapp only
+  - contact us on telegram
+  - paid in crypto
+
+# Location containing one of these → not remote → drop
+notRemoteSignals: [hybrid, on-site, onsite, in office, in-office, relocation required]
+# Title containing one of these → not remote → drop.
+# "hybrid" is left out on purpose: "Hybrid QA" usually means manual + automation.
+notRemoteTitleSignals: [on-site, onsite, in office, in-office]
+
+stackKeywords: [playwright, typescript, javascript, selenium, java, testng, postman, rest api, api testing, sql, browserstack, jira, xray, testrail, mobile, ios, android, appium, k6, cypress]
+domainKeywords: [saas, b2b, enterprise, compliance, regulated, ehs, safety, fintech, healthtech, mobile app]
+interviewRiskKeywords: [leetcode, data structures and algorithms, docker required, kubernetes, k8s, system design, build ci/cd pipelines, golang, rust]
+typeBKeywords: [llm evaluation, model evaluation, red teaming, prompt injection, hallucination, rag, ai safety, evals]
+
+maxAgeDays: 30
+maxYearsForSeniorTitles: 5      # senior/lead title AND more years than this → drop
+salaryFloorUsdMonth: 2000       # stated max below this → drop
+salaryFloorUsdHour: 13          # for hourly posts

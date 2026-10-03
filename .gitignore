@@ -1,0 +1,12 @@
+node_modules/
+out/
+.env
+.env.*
+!.env.example
+# Google service-account keys and any other credentials
+*.json.key
+*service-account*.json
+*-sa.json
+credentials*.json
+token*.json
+.DS_Store

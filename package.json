@@ -1,0 +1,30 @@
+{
+  "name": "job-pipeline",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Personal remote-QA job search pipeline (Phase 1: find, filter, score, track; no sending).",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "fetch": "tsx src/cli.ts fetch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.131.0",
+    "dotenv": "^18.0.5",
+    "fast-xml-parser": "^5.11.2",
+    "googleapis": "^182.0.0",
+    "yaml": "^2.9.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
+  }
+}
