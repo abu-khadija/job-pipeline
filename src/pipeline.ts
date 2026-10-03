@@ -1,16 +1,27 @@
-// Phase 1 run: kill switch → fetch → normalize → dedupe → hard filters → score → write → heartbeat.
-// Nothing in here sends anything.
+// One run: kill switch → fetch → normalize → dedupe → hard filters → score → watchlist →
+// referrals → link check → write tabs → heartbeat → digest. Nothing in here sends applications.
+//
+// Two kinds of run (see .github/workflows):
+//   "boards": job boards (Himalayas, Remote OK, Remotive, WWR), twice a day, Batch API scoring.
+//   "ats":    companies' own Greenhouse/Lever/Ashby boards from the watchlist, every 3 hours,
+//             real-time scoring, so a new post is seen within hours (the first 48h matter most).
 import type { Config } from "./config.js";
 import { dedupe, type KnownJob } from "./dedupe.js";
+import { buildDigest } from "./digest.js";
 import { applyHardFilters } from "./filters/hardFilters.js";
-import { toJob } from "./normalize/index.js";
+import { checkLive, type Liveness } from "./liveness.js";
+import { toJob, type RawJob } from "./normalize/index.js";
 import { passesTitlePrefilter } from "./normalize/title.js";
-import { combineScore, formatBreakdown, statusForScore } from "./score/deterministic.js";
-import { estimateCostUsd, type Scorer } from "./score/scorer.js";
-import type { Job, JobRow, RunLog } from "./schema.js";
+import { combineScore, formatBreakdown, scoreBand, statusForScore } from "./score/deterministic.js";
+import { addUsage, emptyUsage, estimateCostUsd, pool, type Scorer } from "./score/scorer.js";
+import type { Job, JobRow, ReferralRow, RunLog, WatchRow } from "./schema.js";
+import { fetchBoard } from "./sources/atsBoards.js";
 import { fetchAll } from "./sources/index.js";
 import type { Store } from "./store/types.js";
 import type { HttpGet } from "./util/http.js";
+import { activeBoards, updateWatchlist, withSeeds } from "./watchlist.js";
+
+export type RunKind = "boards" | "ats" | "all";
 
 export interface RunOptions {
   cfg: Config;
@@ -18,14 +29,21 @@ export interface RunOptions {
   get: HttpGet;
   /** null = no API key: jobs that pass the filters are saved as "unscored". */
   scorer: Scorer | null;
+  kind?: RunKind;
   now?: Date;
   log?: (msg: string) => void;
+  /** Injected in tests; defaults to a real HEAD/GET check. */
+  liveness?: (url: string) => Promise<Liveness>;
+  /** Injected in tests; defaults to the real Greenhouse/Lever/Ashby lookup. */
+  probe?: Parameters<typeof updateWatchlist>[5];
 }
 
 export interface RunSummary {
   stopped: boolean;
   run: RunLog | null;
   rows: JobRow[];
+  newRows: JobRow[];
+  digest: string;
 }
 
 const RESCORE = new Set(["unscored", "score_error"]);
@@ -54,6 +72,9 @@ export function rowFromJob(job: Job, sources: string[], now: Date): JobRow {
     apply_url: job.applyUrl ?? "",
     ats: job.ats,
     apply_email: job.applyEmail ?? "",
+    segment: job.segment,
+    score_band: "",
+    cv_variant: "",
     filter_reasons: "",
     red_flags: "",
     first_seen: now.toISOString(),
@@ -62,10 +83,37 @@ export function rowFromJob(job: Job, sources: string[], now: Date): JobRow {
   };
 }
 
+export function linkedinPeopleSearch(company: string): string {
+  return `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(`${company} Egypt`)}`;
+}
+
+/** Freshest first, so caps and timeouts never cost us the newest posts. */
+function byFreshness(a: Job, b: Job): number {
+  return (Date.parse(b.postedAt ?? "") || 0) - (Date.parse(a.postedAt ?? "") || 0);
+}
+
+async function fetchAtsBoards(cfg: Config, get: HttpGet, watch: WatchRow[], nowIso: string, errors: string[]): Promise<RawJob[]> {
+  const boards = activeBoards(watch);
+  const out: RawJob[] = [];
+  await pool(boards, cfg.limits.scoring.concurrency, async ({ board, company }) => {
+    try {
+      out.push(...(await fetchBoard(cfg, get, board, company)));
+      const row = watch.find((w) => w.ats === board.ats && w.slug === board.slug);
+      if (row) row.last_checked = nowIso;
+    } catch (err) {
+      errors.push(`${board.ats}/${board.slug}: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  });
+  return out;
+}
+
 export async function runFetch(opts: RunOptions): Promise<RunSummary> {
   const { cfg, store, get, scorer } = opts;
+  const kind = opts.kind ?? "all";
   const now = opts.now ?? new Date();
+  const nowIso = now.toISOString();
   const log = opts.log ?? (() => {});
+  const liveness = opts.liveness ?? ((url: string) => checkLive(url, cfg.sources.userAgent));
   const startedAt = new Date().toISOString();
   const errors: string[] = [];
 
@@ -73,17 +121,29 @@ export async function runFetch(opts: RunOptions): Promise<RunSummary> {
   const control = await store.readControl();
   if (control.killSwitch === "STOP") {
     log("Kill switch is STOP. Exiting without doing anything.");
-    return { stopped: true, run: null, rows: [] };
+    return { stopped: true, run: null, rows: [], newRows: [], digest: "" };
   }
 
   // 2. Fetch.
-  const fetched = await fetchAll(cfg, get);
-  errors.push(...fetched.errors);
-  log(`Fetched ${fetched.jobs.length} jobs: ${JSON.stringify(fetched.perSource)}`);
+  let watch = withSeeds(await store.readTable("Watchlist"), cfg, nowIso);
+  const raws: RawJob[] = [];
+  const perSource: Record<string, number> = {};
+  if (kind !== "ats") {
+    const f = await fetchAll(cfg, get);
+    raws.push(...f.jobs);
+    Object.assign(perSource, f.perSource);
+    errors.push(...f.errors);
+  }
+  if (kind !== "boards" && cfg.sources.ats.enabled) {
+    const atsJobs = await fetchAtsBoards(cfg, get, watch, nowIso, errors);
+    raws.push(...atsJobs);
+    perSource.ats_boards = atsJobs.length;
+  }
+  log(`Fetched ${raws.length} jobs: ${JSON.stringify(perSource)}`);
 
   // 3. Keep QA-ish titles, then normalize.
   const jobs: Job[] = [];
-  for (const raw of fetched.jobs) {
+  for (const raw of raws) {
     if (!passesTitlePrefilter(raw.title, cfg.targeting)) continue;
     try {
       jobs.push(toJob(raw, cfg, now));
@@ -93,8 +153,8 @@ export async function runFetch(opts: RunOptions): Promise<RunSummary> {
   }
   log(`${jobs.length} QA-related jobs after the title pre-filter`);
 
-  // 4. Dedupe against the store and within this run.
-  const existing = await store.readJobs();
+  // 4. Dedupe against both job tabs and within this run.
+  const existing = [...(await store.readTable("Jobs")), ...(await store.readTable("Filtered"))];
   const known: KnownJob[] = existing.map((r) => ({ id: r.job_id, applyUrl: r.apply_url, sources: r.sources.split(", ").filter(Boolean) }));
   const { fresh, seenAgain } = dedupe(jobs, known);
   const existingIds = new Set(existing.map((r) => r.job_id));
@@ -118,24 +178,26 @@ export async function runFetch(opts: RunOptions): Promise<RunSummary> {
     newRows.push(row);
   }
   for (const row of retry) toScore.push({ job: jobsById.get(row.job_id)!, row });
+  toScore.sort((a, b) => byFreshness(a.job, b.job));
   const afterFilters = toScore.length;
   log(`${fresh.length} new jobs, ${afterFilters} to score after hard filters`);
 
-  // 6. Score with Haiku (or mark unscored when there is no API key).
+  // 6. Score (Haiku), freshest first, within the per-run cap.
   let scored = 0;
+  let usage = emptyUsage();
   let costUsd = 0;
+  const capped = toScore.slice(0, cfg.limits.maxScoredPerRun);
+  const results = scorer && capped.length ? await scorer.scoreMany(capped.map((t) => t.job)) : new Map();
+  const newlyShortlisted: JobRow[] = [];
   for (const { job, row } of toScore) {
-    if (!scorer) {
+    const res = results.get(job.id);
+    if (!scorer || !res) {
       row.status = "unscored";
+      if (scorer) row.notes = "not scored this run (cap, cost limit or batch timeout); retried next run";
       continue;
     }
-    if (scored >= cfg.limits.maxScoredPerRun || costUsd >= cfg.limits.maxRunCostUsd) {
-      row.status = "unscored";
-      row.notes = "run cap reached, will score next run";
-      continue;
-    }
-    const res = await scorer.score(job);
-    costUsd += estimateCostUsd(cfg.limits.models.score, res.inputTokens, res.outputTokens, cfg);
+    usage = addUsage(usage, res.usage);
+    costUsd += estimateCostUsd(cfg.limits.models.score, res.usage, cfg, res.batch);
     if (!res.ai) {
       row.status = "score_error";
       row.notes = res.error ?? "";
@@ -146,56 +208,104 @@ export async function runFetch(opts: RunOptions): Promise<RunSummary> {
     const ai = res.ai;
     row.red_flags = ai.redFlags.join("; ");
     row.why = ai.oneLineWhy;
+    row.notes = "";
     if (ai.locationEligible === "no") {
       row.status = "filtered_out";
       row.filter_reasons = `ai: location not open to Egypt${ai.locationEvidence ? ` ("${ai.locationEvidence}")` : ""}`;
       continue;
     }
+    if (ai.payrollRestriction === "excludes_egypt") {
+      row.status = "filtered_out";
+      row.filter_reasons = "ai: cannot pay or employ people in Egypt";
+      continue;
+    }
     if (ai.redFlags.length > 0) {
       row.status = "filtered_out";
-      row.filter_reasons = `ai: red flags`;
+      row.filter_reasons = "ai: red flags";
       continue;
     }
     const b = combineScore(job, ai, cfg, now);
     row.score = b.total;
-    row.breakdown = formatBreakdown(b) + (ai.mustHaveGaps.length ? ` | gaps: ${ai.mustHaveGaps.join(", ")}` : "")
-      + (ai.locationEligible === "unclear" ? " | location unclear" : "");
-    row.status = statusForScore(b.total, cfg.scoring);
+    row.score_band = scoreBand(b.total);
+    const notes = [
+      ai.mustHaveGaps.length ? `gaps: ${ai.mustHaveGaps.join(", ")}` : "",
+      ai.locationEligible === "unclear" ? "location unclear" : "",
+      ai.timezoneNote ? `hours: ${ai.timezoneNote}` : "",
+      ai.payrollRestriction === "contractor_only" ? "contractor only" : "",
+    ].filter(Boolean);
+    row.breakdown = [formatBreakdown(b), ...notes].join(" | ");
+    row.status = statusForScore(b, cfg.scoring);
+    if (row.status === "shortlisted") newlyShortlisted.push(row);
+  }
+  log(`Scored ${scored}, ~$${costUsd.toFixed(3)} (cache read ${usage.cacheRead} tokens)`);
+
+  // 7. Is each new shortlisted job still open? (cheap; avoids wasted drafts later)
+  await pool(newlyShortlisted, 5, async (row) => {
+    if ((await liveness(row.apply_url || row.url)) === "gone") {
+      row.status = "closed";
+      row.notes = [row.notes, "listing gone (404/410) when checked"].filter(Boolean).join("; ");
+    }
+  });
+
+  // 8. Watchlist: companies with Egypt-eligible jobs get their own board polled.
+  let watchAdded = 0;
+  if (cfg.sources.ats.enabled) {
+    try {
+      const w = await updateWatchlist(watch, jobs, cfg, get, nowIso, opts.probe);
+      watch = w.rows;
+      watchAdded = w.added.length;
+    } catch (err) {
+      errors.push(`watchlist: ${err instanceof Error ? err.message : String(err)}`);
+    }
   }
 
-  // 7. Merge: existing rows (last_seen/sources updated) first, then new rows best-first.
-  const nowIso = now.toISOString();
+  // 9. Referral targets: the strongest jobs, where someone inside could refer Islam.
+  const referrals = await store.readTable("Referrals");
+  const haveRef = new Set(referrals.map((r) => r.job_id));
+  const newRefs: ReferralRow[] = newlyShortlisted
+    .filter((r) => r.status === "shortlisted" && Number(r.score) >= cfg.scoring.referralMinScore && !haveRef.has(r.job_id))
+    .map((r) => ({
+      job_id: r.job_id, company: r.company, title: r.title, score: r.score, url: r.url,
+      linkedin_people_search: linkedinPeopleSearch(r.company), added_at: nowIso, status: "todo", notes: "",
+    }));
+
+  // 10. Merge: existing rows (last_seen/sources updated, Islam's edits kept), then new rows best-first.
   const merged = existing.map((r) => {
     const again = seenAgain.get(r.job_id);
     if (!again) return r;
     const sources = new Set([...r.sources.split(", ").filter(Boolean), ...again]);
     return { ...r, last_seen: nowIso, sources: [...sources].sort().join(", ") };
   });
-  // Rows from `retry` were edited in place; copy their new values into `merged`.
-  for (const r of retry) {
-    const i = merged.findIndex((m) => m.job_id === r.job_id);
-    if (i >= 0) merged[i] = { ...merged[i]!, ...r, last_seen: nowIso, sources: merged[i]!.sources };
-  }
-  const score = (r: JobRow) => (typeof r.score === "number" ? r.score : -1);
+  const score = (r: JobRow) => (typeof r.score === "number" ? r.score : Number(r.score) || -1);
   newRows.sort((a, b) => score(b) - score(a));
   const rows = [...merged, ...newRows.filter((r) => !existingIds.has(r.job_id))];
-  await store.writeJobs(rows);
 
-  // 8. Heartbeat: one row per run, so a silent day means something is stuck.
+  // Readable Jobs tab: dropped jobs live in Filtered.
+  await store.writeTable("Jobs", rows.filter((r) => r.status !== "filtered_out"));
+  await store.writeTable("Filtered", rows.filter((r) => r.status === "filtered_out"));
+  await store.writeTable("Watchlist", watch);
+  if (newRefs.length) await store.appendRows("Referrals", newRefs);
+
+  // 11. Heartbeat: one row per run, so a silent day means something is stuck.
   const run: RunLog = {
-    run_id: startedAt.replace(/[^0-9]/g, "").slice(0, 14),
+    run_id: `${kind}-${startedAt.replace(/[^0-9]/g, "").slice(0, 14)}`,
     started_at: startedAt,
     finished_at: new Date().toISOString(),
     mode: control.mode,
-    fetched: fetched.jobs.length,
+    fetched: raws.length,
     after_filters: afterFilters,
     new: fresh.length,
     scored,
     shortlisted: rows.filter((r) => r.status === "shortlisted").length,
     errors: errors.join(" | ").slice(0, 2000),
     cost_usd_est: Math.round(costUsd * 1000) / 1000,
+    input_tokens: usage.input,
+    cache_read_tokens: usage.cacheRead,
+    cache_write_tokens: usage.cacheWrite,
+    watchlist_added: watchAdded,
   };
-  await store.appendRun(run);
-  log(`Done. ${run.new} new, ${run.scored} scored, ${run.shortlisted} shortlisted in total, ~$${run.cost_usd_est}`);
-  return { stopped: false, run, rows };
+  await store.appendRows("Runs", [run]);
+  const freshRows = newRows.filter((r) => !existingIds.has(r.job_id));
+  log(`Done. ${run.new} new, ${run.scored} scored, ${run.shortlisted} shortlisted in total, +${watchAdded} watchlist, ~$${run.cost_usd_est}`);
+  return { stopped: false, run, rows, newRows: freshRows, digest: buildDigest(freshRows, run) };
 }

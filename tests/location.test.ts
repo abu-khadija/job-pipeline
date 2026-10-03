@@ -55,6 +55,28 @@ describe("classifyLocation — structured lists (Himalayas, Remotive)", () => {
   });
   it("reject phrases beat an eligible list", () =>
     expect(list([], "Must be located in the US").eligible).toBe("no"));
+  it("Gulf-only lists are left for the AI to judge", () => {
+    const r = list(["United Arab Emirates", "Saudi Arabia"]);
+    expect(r.scope).toBe("gulf");
+    expect(r.eligible).toBe("unknown");
+  });
+});
+
+describe("region phrases vs authorization phrases (EOR)", () => {
+  it("'EU only' drops a job, unless it hires via an EOR (then the AI decides)", () => {
+    expect(text("", "Remote, EU only.").eligible).toBe("no");
+    const viaDeel = text("", "Remote, EU only. We hire through Deel.", true);
+    expect(viaDeel.eligible).toBe("unknown");
+    expect(viaDeel.scope).toBe("europe_only");
+  });
+  it("authorization phrases always drop the job, even with an EOR", () => {
+    expect(text("", "Must be authorized to work in the US. We use Deel.", true).eligible).toBe("no");
+    expect(text("", "Security clearance required.", true).eligible).toBe("no");
+  });
+  it("generic authorization boilerplate in worldwide posts is not a reject", () => {
+    expect(text("Worldwide", "You must be authorized to work in your country of residence.").eligible).toBe("yes");
+    expect(text("Anywhere", "We do not offer visa sponsorship or relocation.").eligible).toBe("yes");
+  });
 });
 
 describe("classifyLocationList", () => {
@@ -68,9 +90,14 @@ describe("classifyLocationList", () => {
 });
 
 describe("detectEor", () => {
-  it("finds Deel and contractor signals", () => {
+  it("finds Deel / EOR / worldwide-contractor signals", () => {
     expect(detectEor("We pay through Deel", t)).toBe(true);
-    expect(detectEor("Hired as an independent contractor", t)).toBe(true);
+    expect(detectEor("We hire worldwide contractors", t)).toBe(true);
+    expect(detectEor("Employer of record available", t)).toBe(true);
     expect(detectEor("Full-time employee in Berlin", t)).toBe(false);
+  });
+  it("plain 'contractor' is not enough (\"US-based contractor\" must not count)", () => {
+    expect(detectEor("This is a US-based contractor role", t)).toBe(false);
+    expect(detectEor("Hired as an independent contractor", t)).toBe(false);
   });
 });

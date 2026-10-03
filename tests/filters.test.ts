@@ -29,6 +29,12 @@ describe("hard filters — each one passes a good job and fails a bad one", () =
     expect(checkRejectPhrases(job({ descriptionHtml: "<p>You must be authorized to work in the US.</p>" }), t)).toMatch(/authorized to work in/);
   });
 
+  it("region phrase is ignored when the post hires via an EOR; authorization phrase is not", () => {
+    expect(checkRejectPhrases(job({ descriptionHtml: "<p>EU only. We hire via Deel.</p>" }), t)).toBeNull();
+    expect(checkRejectPhrases(job({ descriptionHtml: "<p>EU only.</p>" }), t)).toMatch(/eu only/);
+    expect(checkRejectPhrases(job({ descriptionHtml: "<p>Deel. Must be authorized to work in the US.</p>" }), t)).toMatch(/authorized/);
+  });
+
   it("salary floor (monthly and hourly); not stated is fine", () => {
     expect(checkSalary(good, t)).toBeNull();
     expect(checkSalary(job({ salaryText: "$3,000/month" }), t)).toBeNull();

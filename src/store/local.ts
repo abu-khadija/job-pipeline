@@ -1,11 +1,10 @@
-// Local files instead of the Sheet: out/jobs.json (state), out/jobs.csv (to open in Excel/Numbers),
-// out/runs.csv, and out/control.json (kill switch, same meaning as the Control tab).
-import { existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync } from "node:fs";
+// Local files instead of the Sheet: out/<Tab>.json (state) + out/<Tab>.csv (to open in
+// Excel/Numbers), and out/control.json (kill switch, same meaning as the Control tab).
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { JOB_COLUMNS, RUN_COLUMNS, type JobRow, type RunLog } from "../schema.js";
-import { parseControl, type Control, type Store } from "./types.js";
+import { parseControl, TABS, type Control, type Store, type TabName, type TabRows } from "./types.js";
 
-export function toCsv(rows: Record<string, unknown>[], columns: string[]): string {
+export function toCsv(rows: Record<string, unknown>[], columns: readonly string[]): string {
   const esc = (v: unknown) => {
     const s = v === null || v === undefined ? "" : String(v);
     return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
@@ -30,20 +29,17 @@ export class LocalStore implements Store {
     return parseControl(c.killSwitch, c.mode);
   }
 
-  async readJobs(): Promise<JobRow[]> {
-    const f = this.file("jobs.json");
-    return existsSync(f) ? (JSON.parse(readFileSync(f, "utf8")) as JobRow[]) : [];
+  async readTable<T extends TabName>(tab: T): Promise<TabRows[T][]> {
+    const f = this.file(`${tab}.json`);
+    return existsSync(f) ? (JSON.parse(readFileSync(f, "utf8")) as TabRows[T][]) : [];
   }
 
-  async writeJobs(rows: JobRow[]): Promise<void> {
-    writeFileSync(this.file("jobs.json"), JSON.stringify(rows, null, 2) + "\n");
-    writeFileSync(this.file("jobs.csv"), toCsv(rows as unknown as Record<string, unknown>[], JOB_COLUMNS));
+  async writeTable<T extends TabName>(tab: T, rows: TabRows[T][]): Promise<void> {
+    writeFileSync(this.file(`${tab}.json`), JSON.stringify(rows, null, 2) + "\n");
+    writeFileSync(this.file(`${tab}.csv`), toCsv(rows as unknown as Record<string, unknown>[], TABS[tab]));
   }
 
-  async appendRun(run: RunLog): Promise<void> {
-    const f = this.file("runs.csv");
-    const csv = toCsv([run as unknown as Record<string, unknown>], RUN_COLUMNS);
-    if (existsSync(f)) appendFileSync(f, csv.split("\n").slice(1).join("\n"));
-    else writeFileSync(f, csv);
+  async appendRows<T extends TabName>(tab: T, rows: TabRows[T][]): Promise<void> {
+    await this.writeTable(tab, [...(await this.readTable(tab)), ...rows]);
   }
 }

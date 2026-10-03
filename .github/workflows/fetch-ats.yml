@@ -1,0 +1,29 @@
+# Watchlist companies' own Greenhouse/Lever/Ashby boards every 3 hours, so a new post is seen
+# within hours (the first 48 hours matter most). Real-time scoring, only for new jobs.
+name: fetch-ats
+on:
+  schedule:
+    - cron: "30 */3 * * *"
+  workflow_dispatch:
+concurrency:
+  group: pipeline
+  cancel-in-progress: false
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run fetch -- --only=ats
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SHEET_ID: ${{ secrets.SHEET_ID }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DRY_RUN: "true"

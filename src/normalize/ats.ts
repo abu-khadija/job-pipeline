@@ -1,5 +1,5 @@
 // Works out which applicant tracking system an apply URL belongs to.
-import type { Ats } from "../schema.js";
+import type { Ats, AtsBoard } from "../schema.js";
 
 const HOSTS: [RegExp, Ats][] = [
   [/(^|\.)greenhouse\.io$/, "greenhouse"],
@@ -52,4 +52,30 @@ export function cleanUrl(u: string | null | undefined): string | null {
   } catch {
     return null;
   }
+}
+
+// Board URLs that reveal a company's own Greenhouse/Lever/Ashby slug.
+const BOARD_PATTERNS: [RegExp, AtsBoard["ats"]][] = [
+  [/https?:\/\/(?:boards|job-boards)(?:\.eu)?\.greenhouse\.io\/(?:embed\/job_board\?for=)?([a-z0-9_-]+)/i, "greenhouse"],
+  [/https?:\/\/boards-api\.greenhouse\.io\/v1\/boards\/([a-z0-9_-]+)/i, "greenhouse"],
+  [/https?:\/\/jobs(?:\.eu)?\.lever\.co\/([a-z0-9_.-]+)/i, "lever"],
+  [/https?:\/\/jobs\.ashbyhq\.com\/([a-z0-9_.%-]+)/i, "ashby"],
+];
+
+const NOT_SLUGS = new Set(["embed", "jobs", "v1", "api", "careers"]);
+
+/** First Greenhouse/Lever/Ashby board found in a URL or a block of HTML/text. */
+export function findAtsBoard(text: string | null | undefined): AtsBoard | null {
+  if (!text) return null;
+  for (const [re, ats] of BOARD_PATTERNS) {
+    const m = text.match(re);
+    let slug: string | null = null;
+    try {
+      slug = m?.[1] ? decodeURIComponent(m[1]).toLowerCase() : null;
+    } catch {
+      slug = m?.[1]?.toLowerCase() ?? null;
+    }
+    if (slug && !NOT_SLUGS.has(slug)) return { ats, slug };
+  }
+  return null;
 }

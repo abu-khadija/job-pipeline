@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { loadConfig } from "../src/config.js";
 import { toJob, type RawJob } from "../src/normalize/index.js";
-import type { Job } from "../src/schema.js";
+import type { AiScore, Job } from "../src/schema.js";
 
 export const ROOT = path.resolve(import.meta.dirname, "..");
 export const cfg = loadConfig(path.join(ROOT, "config"));
@@ -35,3 +35,12 @@ export function raw(overrides: Partial<RawJob> = {}): RawJob {
 export function job(overrides: Partial<RawJob> = {}, jobOverrides: Partial<Job> = {}): Job {
   return { ...toJob(raw(overrides), cfg, NOW), ...jobOverrides };
 }
+
+/** A strong, fully eligible AI judgement used by several tests. */
+export const goodAi: AiScore = {
+  roleFit: 30, stackMatch: 25, domain: 8, interviewRisk: 9, isTypeB: false,
+  locationEligible: "yes", locationEvidence: "Remote worldwide",
+  timezoneOverlap: "full", timezoneNote: "", payrollRestriction: "none",
+  redFlags: [], mustHaveGaps: [], oneLineWhy: "Playwright QA role",
+};
+

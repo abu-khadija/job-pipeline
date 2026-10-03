@@ -15,13 +15,16 @@ const TargetingSchema = z.object({
   location: z.object({
     accept: z.array(z.string()),
     eorSignals: z.array(z.string()),
-    reject: z.array(z.string()),
+    rejectAuthorization: z.array(z.string()),
+    rejectRegion: z.array(z.string()),
+    gulfPlaces: z.array(z.string()),
   }),
   redFlags: z.array(z.string()),
   notRemoteSignals: z.array(z.string()),
   notRemoteTitleSignals: z.array(z.string()),
   stackKeywords: z.array(z.string()),
   domainKeywords: z.array(z.string()),
+  arabicKeywords: z.array(z.string()),
   interviewRiskKeywords: z.array(z.string()),
   typeBKeywords: z.array(z.string()),
   maxAgeDays: z.number(),
@@ -33,6 +36,7 @@ const TargetingSchema = z.object({
 const ScoringSchema = z.object({
   applyThreshold: z.number(),
   maybeThreshold: z.number(),
+  referralMinScore: z.number(),
   weights: z.object({
     roleFit: z.number(),
     roleFitP3Cap: z.number(),
@@ -41,6 +45,7 @@ const ScoringSchema = z.object({
     domain: z.number(),
     interviewRisk: z.number(),
     freshness: z.number(),
+    timezone: z.number(),
   }),
   salaryPoints: z.object({
     tiers: z.array(z.object({ min: z.number(), points: z.number() })),
@@ -50,7 +55,8 @@ const ScoringSchema = z.object({
     tiers: z.array(z.object({ maxDays: z.number(), points: z.number() })),
     older: z.number(),
   }),
-  typeB: z.object({ penaltyEnabled: z.boolean(), penalty: z.number() }),
+  timezonePoints: z.object({ full: z.number(), partial: z.number(), unknown: z.number(), none: z.number() }),
+  typeB: z.object({ penaltyEnabled: z.boolean(), penalty: z.number(), keepAtLeastMaybe: z.boolean() }),
 });
 
 const SourcesSchema = z.object({
@@ -73,11 +79,23 @@ const SourcesSchema = z.object({
     }),
     weworkremotely: z.object({ enabled: z.boolean(), feeds: z.array(z.string()) }),
   }).passthrough(),
+  ats: z.object({
+    enabled: z.boolean(),
+    greenhouse: z.string(),
+    lever: z.string(),
+    ashby: z.string(),
+    maxNewCompanyLookupsPerRun: z.number(),
+    seeds: z.array(z.object({ ats: z.enum(["greenhouse", "lever", "ashby"]), slug: z.string(), company: z.string() })),
+  }),
 });
 
 const LimitsSchema = z.object({
   models: z.object({ score: z.string(), classify: z.string(), write: z.string(), factCheck: z.string() }),
   prices: z.record(z.string(), z.object({ inputPerMTok: z.number(), outputPerMTok: z.number() })),
+  cacheReadMultiplier: z.number(),
+  cacheWriteMultiplier: z.number(),
+  batchDiscount: z.number(),
+  scoring: z.object({ useBatchForBoards: z.boolean(), batchMaxWaitMinutes: z.number(), concurrency: z.number().int().min(1) }),
   maxRunCostUsd: z.number(),
   maxDescriptionChars: z.number(),
   maxScoredPerRun: z.number(),

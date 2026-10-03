@@ -15,6 +15,13 @@ export function fixMojibake(s: string): string {
   return fixed.includes("\ufffd") ? s : fixed;
 }
 
+/** Turns "&lt;p&gt;" back into "<p>" (Greenhouse sends its HTML escaped). */
+export function decodeEntities(s: string): string {
+  return s
+    .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&");
+}
+
 /** HTML → plain text, keeping paragraph breaks so descriptions stay readable. */
 export function stripHtml(html: string): string {
   return fixMojibake(html)

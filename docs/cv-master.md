@@ -1,7 +1,7 @@
 # Islam Ibrahim Abu-Khadija
 
 AI-First QA Engineer | Playwright (TypeScript) · AI-Agent-Driven Test Automation · Enterprise SaaS
-Alexandria, Egypt · Remote (US / Canada / EU) · +20 106 899 2404 · TODO_PERSONAL_GMAIL · linkedin.com/in/abukhadija-iti · github.com/abu-khadija
+Based in Egypt · Remote (US / EU time zones) · Contractor or EOR · +20 106 899 2404 · TODO_PERSONAL_GMAIL · linkedin.com/in/abukhadija-iti · github.com/abu-khadija
 
 ## Summary
 

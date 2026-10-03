@@ -24,10 +24,17 @@ export function checkLocation(job: Job): string | null {
     : null;
 }
 
-/** Description-level reject phrases ("must be authorized to work in the US"…). */
+/**
+ * Description-level reject phrases. Authorization/residence phrases always drop the job;
+ * region phrases ("EU only") drop it unless the post hires via an EOR or contractors.
+ */
 export function checkRejectPhrases(job: Job, t: Targeting): string | null {
-  const hits = findPhrases(`${job.locationRaw}\n${job.description}`, t.location.reject);
-  return hits.length ? `location: "${hits[0]}"` : null;
+  const text = `${job.locationRaw}\n${job.description}`;
+  const auth = findPhrases(text, t.location.rejectAuthorization);
+  if (auth.length) return `location: "${auth[0]}"`;
+  const region = findPhrases(text, t.location.rejectRegion);
+  if (region.length && !job.viaEor) return `location: "${region[0]}"`;
+  return null;
 }
 
 export function checkSalary(job: Job, t: Targeting): string | null {

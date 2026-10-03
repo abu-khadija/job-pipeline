@@ -54,4 +54,7 @@ npm run typecheck
 npm run fetch            # Phase 1: fetch, filter, score, dedupe, write to Sheet (no sending)
 npm run fetch -- --local # same, but write to out/ (jobs.csv, jobs.json, runs.csv, control.json)
 npm run fetch -- --no-ai # skip Haiku; jobs that pass filters are saved as "unscored"
+npm run fetch -- --only=boards   # job boards (2x/day in CI, Batch API scoring)
+npm run fetch -- --only=ats      # watchlist ATS boards (every 3h in CI, real-time scoring)
+npm run report           # reply rate by source / CV variant / score band
 ```

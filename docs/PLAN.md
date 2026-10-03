@@ -310,3 +310,28 @@ based in Egypt, remote contractor or via employer of record; never "authorized t
 - Talent platforms (Turing, Arc, Mercor, Andela, etc.): Islam creates the accounts and takes the tests personally;
   Claude may prepare answers; Islam presses submit. Not automated.
 - A Telegram "remote jobs that accept Egypt" channel may be fed from this pipeline later — not in scope now.
+
+## 18. Changes after recruiter advice (Oct 2, 2026)
+
+Advice from a recruiter with 15 years of placing Egyptians in USD-paid remote roles (opinions,
+not sourced data), turned into system changes. All built and tested; see `docs/PROGRESS.md`.
+
+| Advice | Change |
+| --- | --- |
+| Companies that hired from Egypt before hire again; ATS boards beat job boards | **Watchlist** tab grows by itself: any company with an Egypt-eligible job is added if its Greenhouse/Lever/Ashby board is known (apply link or a link in the post) or found by name (up to 15 lookups per run; misses remembered as `none`). |
+| The first 48 hours matter most | `fetch-ats.yml` polls watchlist boards **every 3 hours** with real-time scoring. Freshness weight 5 → **10** (≤1 day 10, ≤2 days 8, ≤7 days 5, ≤14 days 2). Scoring queue is **freshest first**. |
+| "Worldwide" often isn't | Haiku returns `timezoneOverlap` (full/partial/none/unknown) and `payrollRestriction`. New **timezone factor (10 pts)**. `payrollRestriction: excludes_egypt` → dropped. |
+| Gulf market | Scope `gulf` (Gulf/MENA-only lists → AI judges, not dropped), segment `mena_gulf`, posts asking for Arabic/RTL get full domain points, Himalayas queries "arabic qa" / "localization qa". Bayt and Wuzzuf: email alerts only (no API; scraping breaks their terms). |
+| Inbound beats outbound | Manual (LinkedIn headline, Open to Work for recruiters): `docs/ROADMAP-AFTER-PIPELINE.md`. |
+| Referrals multiply chances | **Referrals** tab: shortlisted jobs scoring ≥ 80 with a LinkedIn people-search link. Islam searches and asks by hand; the system never messages anyone on LinkedIn. |
+| Study results, not volume | Jobs rows carry `segment`, `score_band`, `cv_variant` (filled in Phase 2); `npm run report` shows reply rate by source / CV variant / score band. |
+
+Technical changes:
+
+- **Weights (sum 100):** role 25 (P3 cap 17) · stack 20 · salary 15 · domain 10 · interview risk 10 · freshness 10 · timezone 10. The model still judges on its fixed 0–30/0–25/0–10 scales; code rescales and clamps.
+- **Batch API** for board runs (half price; cancelled after 45 min and retried next run); real-time with **5 parallel calls** for ATS runs.
+- **Prompt caching** really works now: Haiku 4.5 caches only prompts ≥ 4096 tokens. The system prompt now includes the full CV and 13 calibration examples (~4.1–5.5k tokens). Runs tab logs `cache_read_tokens`; it must be > 0 from the second call on. Cost estimate prices cache reads at 0.1x and writes at 1.25x.
+- **Link check:** newly shortlisted jobs get a HEAD/GET; only 404/410 marks them `closed`.
+- **Tabs:** `Jobs` (useful rows), `Filtered` (dropped rows), `Watchlist`, `Referrals`, `Runs`, `Exceptions`, `Control`. Sheet rows are read by header name, so columns can change safely.
+- **Daily digest:** top 5 new jobs + heartbeat, printed every run and sent to Islam's own Telegram chat if `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` are set.
+- **Fixes from the review:** CV header no longer implies US/Canada/EU work authorization; region reject phrases respect EOR while authorization phrases always reject; plain "contractor" removed from EOR signals; Type B jobs never pushed below `maybe` by the penalty alone.

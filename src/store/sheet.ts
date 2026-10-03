@@ -1,15 +1,9 @@
 // Google Sheet store, using a service account the Sheet is shared with (docs/SETUP-ISLAM.md A5).
+// Rows are read by header name, so adding or moving a column later doesn't break old data.
+// Values are written RAW: a job title starting with "=" stays text, never a formula.
 import { readFileSync } from "node:fs";
 import { google, type sheets_v4 } from "googleapis";
-import { JOB_COLUMNS, RUN_COLUMNS, type JobRow, type RunLog } from "../schema.js";
-import { parseControl, type Control, type Store } from "./types.js";
-
-const TABS: Record<string, string[]> = {
-  Jobs: JOB_COLUMNS,
-  Runs: RUN_COLUMNS,
-  Exceptions: ["created_at", "job_id", "company", "reason", "what_islam_must_do", "resolved"],
-  Control: [],
-};
+import { parseControl, rowsFromValues, TABS, type Control, type Store, type TabName, type TabRows } from "./types.js";
 
 /** Column letter for a 1-based index (1 → A, 27 → AA). */
 export function colLetter(n: number): string {
@@ -48,23 +42,18 @@ export class SheetStore implements Store {
     if (this.ready) return;
     const meta = await this.api.spreadsheets.get({ spreadsheetId: this.sheetId });
     const existing = new Set((meta.data.sheets ?? []).map((s) => s.properties?.title));
-    const missing = Object.keys(TABS).filter((t) => !existing.has(t));
+    const wanted = [...Object.keys(TABS), "Control"];
+    const missing = wanted.filter((t) => !existing.has(t));
     if (missing.length) {
       await this.api.spreadsheets.batchUpdate({
         spreadsheetId: this.sheetId,
         requestBody: { requests: missing.map((title) => ({ addSheet: { properties: { title } } })) },
       });
     }
-    for (const [tab, cols] of Object.entries(TABS)) {
-      if (!missing.includes(tab)) continue;
-      const values = tab === "Control"
-        ? [["kill_switch", "RUN"], ["mode", "dry"]]
-        : [cols];
+    for (const tab of missing) {
+      const values = tab === "Control" ? [["kill_switch", "RUN"], ["mode", "dry"]] : [[...TABS[tab as TabName]]];
       await this.api.spreadsheets.values.update({
-        spreadsheetId: this.sheetId,
-        range: `${tab}!A1`,
-        valueInputOption: "RAW",
-        requestBody: { values },
+        spreadsheetId: this.sheetId, range: `${tab}!A1`, valueInputOption: "RAW", requestBody: { values },
       });
     }
     this.ready = true;
@@ -77,34 +66,35 @@ export class SheetStore implements Store {
     return parseControl(v[0]?.[0], v[1]?.[0]);
   }
 
-  async readJobs(): Promise<JobRow[]> {
+  async readTable<T extends TabName>(tab: T): Promise<TabRows[T][]> {
     await this.ensureTabs();
-    const last = colLetter(JOB_COLUMNS.length);
-    const res = await this.api.spreadsheets.values.get({ spreadsheetId: this.sheetId, range: `Jobs!A2:${last}` });
-    return (res.data.values ?? [])
-      .filter((r) => r[0])
-      .map((r) => Object.fromEntries(JOB_COLUMNS.map((c, i) => [c, r[i] ?? ""])) as unknown as JobRow);
+    const res = await this.api.spreadsheets.values.get({ spreadsheetId: this.sheetId, range: `${tab}!A1:ZZ` });
+    const [header = [], ...values] = res.data.values ?? [];
+    return rowsFromValues<TabRows[T]>(header.map(String), values, TABS[tab]);
   }
 
-  async writeJobs(rows: JobRow[]): Promise<void> {
+  async writeTable<T extends TabName>(tab: T, rows: TabRows[T][]): Promise<void> {
     await this.ensureTabs();
-    if (rows.length === 0) return;
-    const last = colLetter(JOB_COLUMNS.length);
+    const cols = TABS[tab];
+    // Clear first: the table can shrink (for example when rows move to Filtered).
+    await this.api.spreadsheets.values.clear({ spreadsheetId: this.sheetId, range: `${tab}!A1:ZZ` });
     await this.api.spreadsheets.values.update({
       spreadsheetId: this.sheetId,
-      range: `Jobs!A2:${last}${rows.length + 1}`,
+      range: `${tab}!A1:${colLetter(cols.length)}${rows.length + 1}`,
       valueInputOption: "RAW",
-      requestBody: { values: rows.map((r) => JOB_COLUMNS.map((c) => r[c] ?? "")) },
+      requestBody: { values: [[...cols], ...rows.map((r) => cols.map((c) => (r as Record<string, unknown>)[c] ?? ""))] },
     });
   }
 
-  async appendRun(run: RunLog): Promise<void> {
+  async appendRows<T extends TabName>(tab: T, rows: TabRows[T][]): Promise<void> {
+    if (rows.length === 0) return;
     await this.ensureTabs();
+    const cols = TABS[tab];
     await this.api.spreadsheets.values.append({
       spreadsheetId: this.sheetId,
-      range: "Runs!A1",
+      range: `${tab}!A1`,
       valueInputOption: "RAW",
-      requestBody: { values: [RUN_COLUMNS.map((c) => run[c])] },
+      requestBody: { values: rows.map((r) => cols.map((c) => (r as Record<string, unknown>)[c] ?? "")) },
     });
   }
 }

@@ -21,6 +21,8 @@ Claude Code can walk you through any step: just say "help me with step A4".
 - [ ] **A7. GitHub Secrets.** Repo → Settings → Secrets and variables → Actions: add `ANTHROPIC_API_KEY`, `SHEET_ID`, and `GOOGLE_SERVICE_ACCOUNT_JSON` (paste the whole JSON file content).
 - [ ] **A8. Personal Gmail.** Decide which personal Gmail address you'll use for job search. Replace `TODO_PERSONAL_GMAIL` in `docs/master-profile.md` and `docs/cv-master.md`. (Can wait until calibration, but nothing can be sent without it.)
 
+- [ ] **A9. (Optional) Telegram digest.** In Telegram, talk to @BotFather → `/newbot` → copy the token. Send any message to your new bot, then open `https://api.telegram.org/bot<TOKEN>/getUpdates` in a browser and copy `chat.id`. Put `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` in `.env` and in GitHub Secrets. You get the top 5 new jobs + heartbeat after every run.
+
 Then open Claude Code in the repo and paste `FIRST-PROMPT.md`.
 
 ## Part B — after the exam (~Oct 16, about 1.5 hours)
@@ -28,7 +30,8 @@ Then open Claude Code in the repo and paste `FIRST-PROMPT.md`.
 - [ ] **B1. Calibration read (20 min).** Open the `Drafts` tab, read 20 drafts, write comments in the `notes` column. Tell Claude Code: "read my calibration notes and tune the prompts/config".
 - [ ] **B2. Gmail API.** Same Google Cloud project: enable **Gmail API**; OAuth consent screen → External → add yourself as a user; create an OAuth client of type **Desktop app**; run the auth helper Claude Code builds (`npm run gmail:auth`) to get a refresh token; add `GMAIL_CLIENT_ID`, `GMAIL_CLIENT_SECRET`, `GMAIL_REFRESH_TOKEN` to `.env` and GitHub Secrets.
   Note: while the consent screen is in "Testing" status, Google refresh tokens expire after about 7 days. Ask Claude Code to check the current rule and how to avoid it for a personal app.
-- [ ] **B3. Job alerts to that Gmail.** Create alerts on LinkedIn, Wellfound, Jobgether, EU Remote Jobs, Remote Rocketship, Built In, Welcome to the Jungle, using the P1/P2 titles in `config/targeting.yaml`, remote, worldwide/EMEA.
+- [ ] **B3. Job alerts to that Gmail.** Create alerts on LinkedIn, Wellfound, Jobgether, EU Remote Jobs, Remote Rocketship, Built In, Welcome to the Jungle, using the P1/P2 titles in `config/targeting.yaml`, remote, worldwide/EMEA. Also **Bayt** and **Wuzzuf** (Gulf/Egypt market): remote QA, foreign-currency pay.
+- [ ] **B3b. LinkedIn profile** (recruiter advice, ~15 min): headline and Open to Work as in `docs/ROADMAP-AFTER-PIPELINE.md`.
 - [ ] **B4. Go-live approval.** Only after B1–B2: set `Control!B2` to `live` and `DRY_RUN=false`. Caps apply automatically.
 
 ## Part C — by hand, never automated

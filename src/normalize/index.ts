@@ -1,9 +1,9 @@
 // Turns what a source adapter extracted (RawJob) into the one Job schema.
 import { createHash } from "node:crypto";
 import type { Config } from "../config.js";
-import { Job, type SalaryPeriod } from "../schema.js";
-import { cleanUrl, detectAts, findApplyEmail } from "./ats.js";
-import { classifyLocation, detectEor } from "./location.js";
+import { Job, type AtsBoard, type SalaryPeriod } from "../schema.js";
+import { cleanUrl, detectAts, findApplyEmail, findAtsBoard } from "./ats.js";
+import { classifyLocation, detectArabic, detectEor } from "./location.js";
 import { parseSalaryText, salaryFromNumbers, type Salary } from "./salary.js";
 import { normalizeForMatch, stripHtml, truncate } from "./text.js";
 import { seniorityOf, yearsRequired } from "./title.js";
@@ -26,6 +26,8 @@ export interface RawJob {
   postedAt: string | null;
   descriptionHtml: string;
   tags?: string[];
+  /** Set by the ATS adapters, which know the board they read from. */
+  atsBoard?: AtsBoard | null;
 }
 
 const COMPANY_SUFFIXES = /\b(inc|llc|ltd|limited|gmbh|corp|corporation|co|plc|sa|bv|ag|srl)\b/g;
@@ -74,6 +76,9 @@ export function toJob(raw: RawJob, cfg: Config, now: Date): Job {
 
   const applyUrl = cleanUrl(raw.applyUrl);
   const applyEmail = findApplyEmail(description);
+  const arabicPlus = detectArabic(fullText, cfg.targeting);
+  // The company's own ATS board: from the apply link, else from a link inside the post.
+  const atsBoard = raw.atsBoard ?? findAtsBoard(applyUrl) ?? findAtsBoard(raw.descriptionHtml);
 
   return Job.parse({
     id: jobId(raw.company, raw.title),
@@ -90,6 +95,9 @@ export function toJob(raw: RawJob, cfg: Config, now: Date): Job {
     remoteScope: location.scope,
     allowedCountries: raw.places ?? [],
     viaEor,
+    segment: location.scope === "gulf" || arabicPlus ? "mena_gulf" : "global",
+    arabicPlus,
+    atsBoard,
     salaryRaw: raw.salaryText ?? (raw.salaryNumbers ? `${raw.salaryNumbers.min ?? ""}-${raw.salaryNumbers.max ?? ""} ${raw.salaryNumbers.currency}/${raw.salaryNumbers.period}` : null),
     salaryMinUsdMonth: salary?.minUsdMonth ?? null,
     salaryMaxUsdMonth: salary?.maxUsdMonth ?? null,

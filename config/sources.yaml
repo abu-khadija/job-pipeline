@@ -10,7 +10,7 @@ sources:
     # Search endpoint, filtered to jobs open to candidates in Egypt. 20 jobs per page (fixed by Himalayas).
     url: "https://himalayas.app/jobs/api/search"
     country: EG
-    queries: [qa engineer, quality assurance, test automation, sdet, software tester, qa analyst]
+    queries: [qa engineer, quality assurance, test automation, sdet, software tester, qa analyst, arabic qa, localization qa]
     maxPagesPerQuery: 5
   remoteok:
     enabled: true
@@ -39,5 +39,17 @@ sources:
   workingnomads: { enabled: false }
   hackernews: { enabled: false }
 
-# Phase 4+: companies whose Greenhouse/Lever/Ashby boards are polled twice daily.
-watchlist: []
+# Company ATS boards, polled every 3 hours (npm run fetch -- --only=ats).
+# The watchlist grows by itself: any company with an Egypt-eligible job is looked up on
+# Greenhouse, Lever and Ashby. Public read-only APIs; a 404 means "no board".
+ats:
+  enabled: true
+  greenhouse: "https://boards-api.greenhouse.io/v1/boards/{slug}/jobs?content=true"
+  lever: "https://api.lever.co/v0/postings/{slug}?mode=json"
+  ashby: "https://api.ashbyhq.com/posting-api/job-board/{slug}?includeCompensation=true"
+  maxNewCompanyLookupsPerRun: 15
+  # Companies to always watch: { ats: greenhouse|lever|ashby, slug: "...", company: "..." }
+  seeds: []
+
+# Not automated on purpose (no public API; scraping breaks their terms):
+# Bayt, Wuzzuf, LinkedIn, Wellfound → set up email alerts (docs/SETUP-ISLAM.md B3).

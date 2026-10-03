@@ -7,9 +7,20 @@ models:
   factCheck: claude-sonnet-5-5
 
 # USD per million tokens, used only to estimate cost in the Runs tab.
+# Cache reads cost 0.1x input, 5-minute cache writes 1.25x; the Batch API halves everything.
 prices:
   claude-haiku-4-5: { inputPerMTok: 1, outputPerMTok: 5 }
   claude-sonnet-5-5: { inputPerMTok: 2, outputPerMTok: 10 }
+cacheReadMultiplier: 0.1
+cacheWriteMultiplier: 1.25
+batchDiscount: 0.5
+
+scoring:
+  # Board runs (2x/day) use the Batch API: half price, results in minutes.
+  # ATS runs (every 3h) score in real time so fresh jobs are seen fast.
+  useBatchForBoards: true
+  batchMaxWaitMinutes: 45
+  concurrency: 5          # parallel real-time calls
 
 maxRunCostUsd: 3          # stop scoring if one run's estimated cost passes this
 maxScoredPerRun: 150      # safety cap on model calls per run

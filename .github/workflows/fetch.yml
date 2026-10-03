@@ -1,17 +1,18 @@
-# Phase 1 run twice a day: fetch, filter, score, write to the Google Sheet. Sends nothing.
-name: fetch
+# Job boards twice a day: fetch, filter, score (Batch API, half price), write to the Sheet.
+# Sends no applications. The optional Telegram digest goes only to Islam's own chat.
+name: fetch-boards
 on:
   schedule:
     - cron: "0 6 * * *"
     - cron: "0 14 * * *"
   workflow_dispatch:
 concurrency:
-  group: fetch
+  group: pipeline          # never two runs writing the Sheet at once
   cancel-in-progress: false
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 60    # the Batch API usually finishes in minutes; capped at 45 in config
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -19,9 +20,11 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run fetch
+      - run: npm run fetch -- --only=boards
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SHEET_ID: ${{ secrets.SHEET_ID }}
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           DRY_RUN: "true"

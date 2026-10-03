@@ -77,21 +77,47 @@ location:
     - remote (any)
     - all countries
     - work from anywhere
-  eorSignals: [deel, remote.com, oyster, rippling, employer of record, eor, contractor]
-  # Any of these → drop
-  reject:
-    - us only
-    - usa only
-    - united states only
-    - u.s. only
-    - must be authorized to work in
+  # Signals that the company hires abroad through an employer of record or as contractors.
+  # Plain "contractor" is NOT here: "US-based contractor" would wrongly count.
+  eorSignals:
+    - deel
+    - remote.com
+    - oyster
+    - rippling eor
+    - employer of record
+    - eor
+    - worldwide contractor
+    - worldwide contractors
+    - contractors anywhere
+    - contractor worldwide
+    - international contractor
+    - international contractors
+    - contract from anywhere
+  # Work authorization / residence / clearance → ALWAYS drop, even with an EOR.
+  # Kept specific on purpose: generic lines like "authorized to work in your country of residence"
+  # appear in worldwide posts too. "No visa sponsorship" is not here: it is about relocating.
+  rejectAuthorization:
+    - must be authorized to work in the us
+    - must be authorized to work in the united states
     - authorized to work in the united states
+    - authorized to work in the us
+    - legally authorized to work in the united states
+    - legally authorized to work in the us
+    - right to work in the uk
+    - right to work in the us
     - must reside in
     - must be located in the us
     - must be based in the us
     - us citizens
+    - us citizenship
     - green card
     - security clearance
+  # Region limits → drop, unless the post hires via an EOR/contractors (then the AI decides).
+  rejectRegion:
+    - us only
+    - usa only
+    - united states only
+    - u.s. only
     - canada only
     - uk only
     - eu only
@@ -99,6 +125,9 @@ location:
     - latam only
     - americas only
     - north america only
+  # Gulf/MENA countries. A list limited to these is "gulf": not dropped, the AI judges it
+  # (Gulf companies often hire Egyptians remotely; Arabic is a plus).
+  gulfPlaces: [united arab emirates, uae, dubai, abu dhabi, saudi arabia, ksa, riyadh, jeddah, qatar, doha, kuwait, bahrain, oman, gcc, jordan, morocco, tunisia, lebanon]
 
 redFlags:
   - pay a fee
@@ -122,6 +151,8 @@ notRemoteTitleSignals: [on-site, onsite, in office, in-office]
 
 stackKeywords: [playwright, typescript, javascript, selenium, java, testng, postman, rest api, api testing, sql, browserstack, jira, xray, testrail, mobile, ios, android, appium, k6, cypress]
 domainKeywords: [saas, b2b, enterprise, compliance, regulated, ehs, safety, fintech, healthtech, mobile app]
+# Posts asking for Arabic (language, RTL testing) get full domain points and segment mena_gulf.
+arabicKeywords: [arabic, arabic speaking, arabic speaker, rtl, right-to-left, right to left, egyptian dialect]
 interviewRiskKeywords: [leetcode, data structures and algorithms, docker required, kubernetes, k8s, system design, build ci/cd pipelines, golang, rust]
 typeBKeywords: [llm evaluation, model evaluation, red teaming, prompt injection, hallucination, rag, ai safety, evals]
 

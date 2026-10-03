@@ -1,31 +1,45 @@
-# Scoring weights (total 100). Code computes salary and freshness; Haiku the rest.
+# Scoring weights (total 100). Code computes salary, freshness and timezone points; Haiku judges the rest.
+# Changed Oct 2, 2026 after recruiter advice: freshness matters more (first 48h), timezone added.
 
 applyThreshold: 70
 maybeThreshold: 60
+referralMinScore: 80    # shortlisted jobs at or above this go to the Referrals tab
 
 weights:
-  roleFit: 30          # P1/P2 up to 30, P3 up to 20
-  roleFitP3Cap: 20
-  stackMatch: 25
-  salary: 20
+  roleFit: 25           # P1/P2 up to 25, P3/unknown up to roleFitP3Cap
+  roleFitP3Cap: 17
+  stackMatch: 20
+  salary: 15
   domain: 10
   interviewRisk: 10
-  freshness: 5
+  freshness: 10
+  timezone: 10
 
 salaryPoints:          # USD per month, uses the max of the posted range
   tiers:
-    - { min: 5000, points: 20 }
-    - { min: 3000, points: 18 }
-    - { min: 2000, points: 12 }
-  notStated: 10
+    - { min: 5000, points: 15 }
+    - { min: 3000, points: 13 }
+    - { min: 2000, points: 9 }
+  notStated: 7
 
-freshnessPoints:
+freshnessPoints:       # the first 48 hours matter most
   tiers:
+    - { maxDays: 1, points: 10 }
+    - { maxDays: 2, points: 8 }
     - { maxDays: 7, points: 5 }
-    - { maxDays: 14, points: 3 }
+    - { maxDays: 14, points: 2 }
   older: 0
+
+# Overlap between Egypt (UTC+2/+3) and the hours the job needs.
+timezonePoints:
+  full: 10       # Europe/EMEA hours, async, or no requirement
+  partial: 6     # a few hours with US East, or similar
+  unknown: 7     # post doesn't say
+  none: 0        # US Pacific full day, APAC, etc.
 
 typeB:
   # "Testing AI products" roles. Set penaltyEnabled: false once the public eval portfolio project exists.
   penaltyEnabled: true
   penalty: 10
+  # Never let the penalty alone push a Type B job below "maybe": these roles are often worldwide.
+  keepAtLeastMaybe: true

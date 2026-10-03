@@ -11,7 +11,8 @@
     "fetch": "tsx src/cli.ts fetch",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "report": "tsx src/cli.ts report"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",
