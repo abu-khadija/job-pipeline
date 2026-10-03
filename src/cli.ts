@@ -7,12 +7,23 @@
 //   npm run report [-- --local]        → reply rates by source / CV variant / score band
 //   npm run generate [-- --local]      → Phase 2: drafts for shortlisted jobs (Drafts tab + out/drafts/)
 //   npm run generate -- --job=<id>,<id> --max=3   → only these jobs / at most 3
+//   npm run send                       → Phase 3: email applications (dry unless Control!B2=live AND DRY_RUN=false)
+//   npm run apply                      → Phase 4: fill forms in a browser; you press Submit
+//   npm run replies                    → Phase 5: read replies, alert + prep pack on invites
+//   npm run followup                   → Phase 5: one follow-up after N days without a reply
+//   npm run daily                      → generate → send → replies → followup (the Mac runs this hourly)
 import "dotenv/config";
 import { writeFileSync, mkdirSync } from "node:fs";
-import { loadConfig } from "./config.js";
+import { createInterface } from "node:readline/promises";
+import { loadConfig, type Config } from "./config.js";
 import { sendTelegram } from "./digest.js";
+import { PlaywrightFiller } from "./forms/browser.js";
+import { runApply } from "./forms/index.js";
 import { runGenerate } from "./generate/index.js";
 import { SonnetWriter } from "./generate/writer.js";
+import { GmailMailbox, type Mailbox } from "./gmail.js";
+import { ClaudeReplyBrain, runFollowups, runReplies } from "./replies.js";
+import { runSend } from "./send/index.js";
 import { runFetch, type RunKind } from "./pipeline.js";
 import { buildReport } from "./report.js";
 import { BatchHaikuScorer, HaikuScorer, type Scorer } from "./score/scorer.js";
@@ -28,6 +39,28 @@ function makeStore(local: boolean): Store {
   return new SheetStore(sheetId);
 }
 
+function gmailIfSetUp(): Mailbox | null {
+  return process.env.GMAIL_REFRESH_TOKEN ? new GmailMailbox() : null;
+}
+
+const log = (m: string) => console.log(m);
+
+function telegram(): ((t: string) => Promise<void>) | undefined {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chat = process.env.TELEGRAM_CHAT_ID;
+  return token && chat ? (t) => sendTelegram(t, token, chat) : undefined;
+}
+
+async function generate(cfg: Config, store: Store, jobIds?: string[], max?: number) {
+  if (!process.env.ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY is not set (docs/SETUP-ISLAM.md A4/A6).");
+  await runGenerate({ cfg, store, get: makeHttpGet(cfg.sources), writer: new SonnetWriter(cfg), jobIds, max, log });
+}
+
+async function replies(cfg: Config, store: Store, mailbox: Mailbox | null) {
+  if (!mailbox) return log("Replies: Gmail not set up yet (npm run gmail:auth). Skipped.");
+  await runReplies({ cfg, store, mailbox, brain: new ClaudeReplyBrain(cfg), log, notify: telegram() });
+}
+
 async function main() {
   const [command, ...flags] = process.argv.slice(2);
   const local = flags.includes("--local");
@@ -41,17 +74,58 @@ async function main() {
     console.log(report.text);
     return;
   }
+  const max = Number(flags.find((f) => f.startsWith("--max="))?.split("=")[1]) || undefined;
   if (command === "generate") {
-    if (!process.env.ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY is not set (docs/SETUP-ISLAM.md A4/A6).");
     const jobIds = flags.find((f) => f.startsWith("--job="))?.split("=")[1]?.split(",").filter(Boolean);
-    const max = Number(flags.find((f) => f.startsWith("--max="))?.split("=")[1]) || undefined;
     const store = makeStore(local);
-    console.log(`Drafting to: ${store.name}. Nothing is sent: you apply by hand from out/drafts/.`);
-    await runGenerate({ cfg, store, get: makeHttpGet(cfg.sources), writer: new SonnetWriter(cfg), jobIds, max, log: (m) => console.log(m) });
+    console.log(`Drafting to: ${store.name}. Drafting never sends anything.`);
+    await generate(cfg, store, jobIds, max);
+    return;
+  }
+  if (command === "send") {
+    await runSend({ cfg, store: makeStore(local), mailbox: gmailIfSetUp(), log });
+    return;
+  }
+  if (command === "apply") {
+    const rl = createInterface({ input: process.stdin, output: process.stdout });
+    try {
+      await runApply({ cfg, store: makeStore(local), filler: new PlaywrightFiller(), ask: (q) => rl.question(q), max, log });
+    } finally {
+      rl.close();
+    }
+    return;
+  }
+  if (command === "replies") {
+    await replies(cfg, makeStore(local), gmailIfSetUp());
+    return;
+  }
+  if (command === "followup") {
+    await runFollowups({ cfg, store: makeStore(local), mailbox: gmailIfSetUp(), log });
+    return;
+  }
+  if (command === "daily") {
+    // One step failing must not stop the others; each step checks the kill switch itself.
+    const store = makeStore(local);
+    const mailbox = gmailIfSetUp();
+    const steps: [string, () => Promise<unknown>][] = [
+      ["generate", () => generate(cfg, store)],
+      ["send", () => runSend({ cfg, store, mailbox, log })],
+      ["replies", () => replies(cfg, store, mailbox)],
+      ["followup", () => runFollowups({ cfg, store, mailbox, log })],
+    ];
+    let failed = 0;
+    for (const [name, step] of steps) {
+      log(`\n--- ${name} (${new Date().toISOString()})`);
+      await step().catch((e) => {
+        failed++;
+        log(`${name} failed: ${e instanceof Error ? e.message : e}`);
+      });
+    }
+    if (failed) process.exit(1);
     return;
   }
   if (command !== "fetch") {
-    console.error("Usage: npm run fetch [-- --only=boards|ats] [--local] [--no-ai]   |   npm run generate [-- --job=<id> --max=N --local]   |   npm run report [-- --local]");
+    console.error("Usage: npm run fetch | generate | send | apply | replies | followup | daily | report   (add -- --local for out/ files)");
     process.exit(2);
   }
 

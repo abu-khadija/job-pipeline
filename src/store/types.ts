@@ -1,7 +1,7 @@
 // Where the pipeline keeps its state. The Google Sheet in production, local files with --local.
 import {
-  DRAFT_COLUMNS, JOB_COLUMNS, REFERRAL_COLUMNS, RUN_COLUMNS, WATCH_COLUMNS,
-  type DraftRow, type JobRow, type ReferralRow, type RunLog, type WatchRow,
+  DRAFT_COLUMNS, JOB_COLUMNS, REFERRAL_COLUMNS, RUN_COLUMNS, SENT_COLUMNS, WATCH_COLUMNS,
+  type DraftRow, type JobRow, type ReferralRow, type RunLog, type SentRow, type WatchRow,
 } from "../schema.js";
 
 export interface Control {
@@ -20,6 +20,7 @@ export const TABS = {
   Runs: RUN_COLUMNS,
   Exceptions: ["created_at", "job_id", "company", "reason", "what_islam_must_do", "resolved"],
   Drafts: DRAFT_COLUMNS,
+  Sent: SENT_COLUMNS,
 } as const;
 
 export type TabName = keyof typeof TABS;
@@ -32,6 +33,7 @@ export interface TabRows {
   Runs: RunLog;
   Exceptions: Record<string, string>;
   Drafts: DraftRow;
+  Sent: SentRow;
 }
 
 export interface Store {

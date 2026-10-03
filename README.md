@@ -33,6 +33,12 @@ npm run fetch -- --only=ats       # watchlist ATS boards only (real-time scoring
 npm run report                    # reply rate by source / CV variant / score band
 npm run generate                  # Phase 2: drafts for shortlisted jobs → Drafts tab + out/drafts/ (sends nothing)
 npm run generate -- --job=<id> --max=3   # only these jobs / at most 3
+npm run send                      # Phase 3: email applications (dry unless Control!B2=live AND DRY_RUN=false)
+npm run apply                     # Phase 4: fills forms in a browser window; YOU press Submit
+npm run replies                   # Phase 5: sorts replies; invites → alert email + prep pack in out/prep/
+npm run followup                  # Phase 5: one follow-up in the same thread after 6 days
+npm run daily                     # all of the above except apply (zsh scripts/install-mac-schedule.sh = hourly)
+npm run gmail:auth                # one-time Gmail sign-in (docs/SETUP-ISLAM.md B2)
 ```
 
 First time only, for the PDF CV: `npx playwright install chromium`.
@@ -55,6 +61,9 @@ for `--local`). Any other value than `RUN` also stops it.
 | What Haiku is asked to judge | `prompts/score.md` |
 | Draft rules: banned words/claims, allowed numbers, word counts, CV variants | `config/writing.yaml` |
 | How Sonnet writes and fact-checks drafts | `prompts/generate.md`, `prompts/fact-check.md` |
+| Sending caps, hours, follow-up delay, per-company limits | `config/limits.yaml` → `sending`, `perCompanyLimits` |
+| Follow-up wording | `config/writing.yaml` → `followUpTemplate` |
+| Form answers (name, phone, location, salary rule…) | `src/forms/answers.ts` |
 | Facts about Islam | `docs/master-profile.md` |
 
 ## Statuses in the Jobs tab

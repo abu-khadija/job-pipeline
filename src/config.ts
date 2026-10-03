@@ -100,6 +100,20 @@ const LimitsSchema = z.object({
   maxDescriptionChars: z.number(),
   maxScoredPerRun: z.number(),
   fx: z.record(z.string(), z.number()),
+  sending: z.object({
+    maxApplicationsPerDay: z.number(),
+    maxFollowUpsPerDay: z.number(),
+    maxSendsPerRun: z.number(),
+    workingHoursUtc: z.object({ start: z.number(), end: z.number() }),
+    followUpAfterDays: z.number(),
+    maxFollowUps: z.number(),
+    replyLookbackDays: z.number(),
+  }),
+  perCompanyLimits: z.object({
+    defaultCooldownDays: z.number(),
+    special: z.array(z.object({ company: z.string(), maxApplications: z.number(), windowDays: z.number() })),
+  }),
+  salaryAnswer: z.object({ rule: z.string(), defaultUsdMonth: z.number() }),
 }).passthrough();
 
 const Range = z.object({ min: z.number(), max: z.number() });
@@ -122,6 +136,7 @@ const WritingSchema = z.object({
   handBuiltVerbs: z.array(z.string()),
   aiBuiltWork: z.array(z.string()),
   allowedNumbers: z.array(z.number()),
+  followUpTemplate: z.string(),
 });
 
 export type Targeting = z.infer<typeof TargetingSchema>;

@@ -28,11 +28,19 @@ Then open Claude Code in the repo and paste `FIRST-PROMPT.md`.
 ## Part B — after the exam (~Oct 16, about 1.5 hours)
 
 - [ ] **B1. Calibration read (20 min).** Open the `Drafts` tab, read 20 drafts, write comments in the `notes` column. Tell Claude Code: "read my calibration notes and tune the prompts/config".
-- [ ] **B2. Gmail API.** Same Google Cloud project: enable **Gmail API**; OAuth consent screen → External → add yourself as a user; create an OAuth client of type **Desktop app**; run the auth helper Claude Code builds (`npm run gmail:auth`) to get a refresh token; add `GMAIL_CLIENT_ID`, `GMAIL_CLIENT_SECRET`, `GMAIL_REFRESH_TOKEN` to `.env` and GitHub Secrets.
-  Note: while the consent screen is in "Testing" status, Google refresh tokens expire after about 7 days. Ask Claude Code to check the current rule and how to avoid it for a personal app.
+- [ ] **B2. Gmail API (about 15 minutes).** Same Google Cloud project, signed in as islamabukhadiga@gmail.com:
+  1. Enable **Gmail API**: console.cloud.google.com/apis/library/gmail.googleapis.com → **Enable**.
+  2. **Google Auth Platform → Branding / OAuth consent screen**: app name `job-pipeline`, your email as support and developer contact. Audience: **External**. Add yourself under **Test users**.
+  3. **Clients → Create client → Desktop app**, name `job-pipeline-mac` → **Download JSON**.
+  4. Save it as `~/.secrets/gmail-oauth-client.json` (same folder as the Sheets key).
+  5. In the repo: `npm run gmail:auth`. A Google page opens: sign in, allow "send" and "read". It saves the three `GMAIL_*` values into `.env` itself (nothing is printed).
+  6. **Avoid the 7-day expiry:** in "Testing" status Google refresh tokens expire after 7 days. Go to **Audience → Publish app**. Google will show "unverified app" on sign-in (fine for your own use); then run `npm run gmail:auth` once more.
+  Gmail sending runs on the Mac (it needs the PDF files), so no GitHub Secrets are needed for Gmail.
 - [ ] **B3. Job alerts to that Gmail.** Create alerts on LinkedIn, Wellfound, Jobgether, EU Remote Jobs, Remote Rocketship, Built In, Welcome to the Jungle, using the P1/P2 titles in `config/targeting.yaml`, remote, worldwide/EMEA. Also **Bayt** and **Wuzzuf** (Gulf/Egypt market): remote QA, foreign-currency pay.
 - [ ] **B3b. LinkedIn profile** (recruiter advice, ~15 min): headline and Open to Work as in `docs/ROADMAP-AFTER-PIPELINE.md`.
-- [ ] **B4. Go-live approval.** Only after B1–B2: set `Control!B2` to `live` and `DRY_RUN=false`. Caps apply automatically.
+- [ ] **B4. Go-live approval.** Only after B1–B2: set `Control!B2` to `live` in the Sheet AND `DRY_RUN=false` in `.env`. Both are needed; caps apply automatically (15/day, 3 per hourly run, 07:00–19:00 UTC, one per company per 60 days).
+- [ ] **B5. Hourly runs on the Mac (optional).** `zsh scripts/install-mac-schedule.sh` runs `npm run daily` every hour (drafts, email sends, replies, follow-ups). The Mac must be awake. Remove it with the command at the top of that script.
+- **Forms:** run `npm run apply` when you sit down. It opens each form in a browser and fills it (green = filled, yellow = check, red = you answer). You press Submit, then type `s` in the terminal.
 
 ## Part C — by hand, never automated
 

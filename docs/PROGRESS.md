@@ -116,7 +116,42 @@ Decisions to confirm (Islam):
 11. **Held or missing posts are not retried automatically.** Delete the Drafts row and set the Jobs
     status back to `shortlisted` to redraft.
 
-## Next: calibration, then Phase 3
+## Phases 3–5 — built Oct 3, 2026 (code done; live sending needs Islam's Gmail sign-in + switch)
+
+Islam asked for all phases now. Everything runs on the Mac (the PDFs live there).
+
+- **Phase 3, email (`npm run send`):** ready drafts whose post literally gave an address. Before each
+  send: kill switch, `Control!B2 = live` AND `DRY_RUN=false`, 07–19 UTC, 15/day and 3 per run, one per
+  company per 60 days (Deel 3). Gmail API with the PDF CV attached; `Sent` tab (new), Drafts `sent`,
+  Jobs `applied`. Dry run (default) only lists what it would send.
+- **Phase 4, forms (`npm run apply`):** live check found a CAPTCHA on all three ATSs (Greenhouse and
+  Ashby: invisible reCAPTCHA; Lever: hCaptcha). The pipeline never gets past CAPTCHAs, so it does not
+  submit forms. Instead it opens each form in a visible browser, follows Himalayas "Apply" links to the
+  company page, fills every field it can from `master-profile.md` (CV and cover-letter PDFs uploaded),
+  colours fields green/yellow/red, and Islam presses Submit and types `s`. Tested on live Greenhouse
+  (GitLab), Lever (Spotify) and Ashby (Ramp) forms without submitting: all standard fields filled;
+  only visa, employment-agreement and custom questions left red.
+- **Phase 5 (`npm run replies`, `npm run followup`):** replies read via Gmail (read-only), by thread for
+  emails and by company name for forms; Haiku sorts invite / reject / question / other; invites get a
+  Sonnet prep pack (`out/prep/`) and an alert email to Islam's own address (+ Telegram if set). One
+  follow-up in the same thread after 6 days without a real reply (auto-receipts don't count).
+- `npm run daily` = generate → send → replies → followup; `scripts/install-mac-schedule.sh` runs it
+  hourly with launchd (not installed: Islam decides).
+- 33 new tests (send rules, MIME/header injection, form answers incl. labels from the live forms, all
+  four runs with fakes). 321 tests in total.
+
+What Islam must do to go live: SETUP B2 (Gmail sign-in, ~15 min), then B4 (both switches), optionally B5.
+
+Decisions to confirm (Islam):
+
+12. **Forms are filled, not submitted**, because of the CAPTCHAs (see above).
+13. **Form answers marked "check"**: "previously worked at X?" → No, years of experience → 3,
+    salary → top of posted range else 3,500 USD/month, notice → 30 days. Visa/sponsorship and
+    employment-agreement questions are always left to Islam.
+14. **The `Sent` tab replaces the planned `Contacts` tab** (same job: caps and per-company limits).
+15. **Exceptions in dry runs:** none are written by `send` any more; forms are all handled in `apply`.
+
+## Next: calibration
 
 Islam reads the drafts and writes comments in Drafts `notes`; prompts and `config/writing.yaml` are
-tuned from them. Phase 3 (Gmail sending with caps) only after that and SETUP part B.
+tuned from them.

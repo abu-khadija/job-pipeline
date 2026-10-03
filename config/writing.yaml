@@ -40,3 +40,12 @@ handBuiltVerbs: ["wrote", "written", "coded", "hand-coded", "programmed", "imple
 aiBuiltWork: ["playwright", "qax", "test-case generator", "test case generator", "k6", "visual regression", "typescript framework", "automation framework"]
 # Numbers allowed in generated text (master-profile "Allowed numbers" + education years).
 allowedNumbers: [3, 5, 122, 15, 200, 100, 2017, 2021, 2022, 2023, 2025, 2026, 30]
+
+# Phase 5: the one follow-up, sent as a reply in the same email thread after
+# limits.yaml → sending.followUpAfterDays. Placeholders: {company} {role} {date} {signature}
+followUpTemplate: |
+  Hi {company} team,
+
+  I am following up on my application for the {role} role, sent on {date}. I would still welcome a short call to see whether my QA automation experience fits what your team needs. My CV is attached to my first email.
+
+  {signature}

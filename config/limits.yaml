@@ -26,10 +26,12 @@ maxRunCostUsd: 3          # stop scoring if one run's estimated cost passes this
 maxScoredPerRun: 150      # safety cap on model calls per run
 maxDescriptionChars: 8000
 
-sending:                  # used from Phase 3
+sending:                  # Phase 3+. Nothing is sent unless Control!B2 = live AND DRY_RUN=false.
   maxApplicationsPerDay: 15
   maxFollowUpsPerDay: 10
+  maxSendsPerRun: 3       # the Mac runs hourly, so sends are spread over the day
   workingHoursUtc: { start: 7, end: 19 }   # spread sends across this window
+  replyLookbackDays: 45   # how far back to look for replies
   followUpAfterDays: 6
   maxFollowUps: 1
 

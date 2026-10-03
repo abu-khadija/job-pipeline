@@ -221,6 +221,39 @@ export const DRAFT_COLUMNS: (keyof DraftRow)[] = [
   "gates", "unsupported_claims", "cost_usd_est", "notes",
 ];
 
+// Phases 3–5. One row per application actually sent (email or form). Caps, the per-company
+// limit, follow-ups and reply tracking all read this tab.
+export interface SentRow {
+  sent_at: string;
+  job_id: string;
+  company: string;
+  title: string;
+  channel: string;        // email | form
+  to: string;             // address or form URL
+  subject: string;
+  gmail_thread_id: string;
+  gmail_message_id: string;
+  followed_up_at: string;
+  reply_status: string;   // "" | invite | reject | question | other
+  reply_at: string;
+  reply_summary: string;
+  notes: string;
+}
+export const SENT_COLUMNS: (keyof SentRow)[] = [
+  "sent_at", "job_id", "company", "title", "channel", "to", "subject", "gmail_thread_id", "gmail_message_id",
+  "followed_up_at", "reply_status", "reply_at", "reply_summary", "notes",
+];
+
+// Phase 5. What Haiku says about a reply. The email is untrusted data.
+export const AiReply = z.object({
+  kind: z.enum(["invite", "reject", "question", "other"]),
+  /** At most 30 words, plain English. */
+  summary: z.string(),
+  /** Dates/times or deadlines the reply mentions, copied as written. */
+  dates: z.array(z.string()),
+});
+export type AiReply = z.infer<typeof AiReply>;
+
 /** A strong job where a referral from someone inside would help. Islam searches by hand. */
 export interface ReferralRow {
   job_id: string;
