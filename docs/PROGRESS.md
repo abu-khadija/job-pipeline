@@ -45,7 +45,8 @@ no Google credentials, no remote, nothing pushed. Commits use a placeholder auth
 - [x] `npm run fetch` writes to the Sheet — done on the personal Mac, Oct 3, 2026.
 - [x] `STOP` makes the run exit immediately (tested, also via the CLI).
 - [x] Running twice creates no duplicate rows (tested and checked live).
-- [ ] GitHub Actions runs on schedule — **needs the private repo + secrets (SETUP A3, A7).**
+- [ ] GitHub Actions runs on schedule — private repo `abu-khadija/job-pipeline` + secrets set Oct 3, 2026;
+  a manual `fetch-boards` run passed. Check that the first scheduled runs appear in the `Runs` tab.
 - [x] `docs/PROGRESS.md` and `docs/SOURCES-VERIFIED.md` written.
 - [x] Zero sending code exists.
 - [ ] First AI-scored run reviewed (top 10 + cost) — run done Oct 3, 2026: 30 jobs scored for ~$0.13
