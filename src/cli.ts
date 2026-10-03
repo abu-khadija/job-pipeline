@@ -21,7 +21,8 @@ import { PlaywrightFiller } from "./forms/browser.js";
 import { runApply } from "./forms/index.js";
 import { runGenerate } from "./generate/index.js";
 import { SonnetWriter } from "./generate/writer.js";
-import { GmailMailbox, type Mailbox } from "./gmail.js";
+import { execFile } from "node:child_process";
+import { GmailMailbox, gmailDaysLeft, type Mailbox } from "./gmail.js";
 import { ClaudeReplyBrain, runFollowups, runReplies } from "./replies.js";
 import { runSend } from "./send/index.js";
 import { runFetch, type RunKind } from "./pipeline.js";
@@ -41,6 +42,19 @@ function makeStore(local: boolean): Store {
 
 function gmailIfSetUp(): Mailbox | null {
   return process.env.GMAIL_REFRESH_TOKEN ? new GmailMailbox() : null;
+}
+
+/** A Mac notification (plus Telegram if set) when the Gmail sign-in is about to expire or has. */
+async function warnGmailExpiry() {
+  if (!process.env.GMAIL_REFRESH_TOKEN) return;
+  const left = gmailDaysLeft(process.env.GMAIL_AUTH_AT);
+  if (left === null || left > 1) return;
+  const text = left < 0
+    ? "Gmail sign-in expired: run npm run gmail:auth"
+    : `Gmail sign-in expires in ${left <= 0 ? "less than a day" : "1 day"}: run npm run gmail:auth`;
+  log(`WARNING: ${text}`);
+  if (process.platform === "darwin") execFile("osascript", ["-e", `display notification "${text}" with title "Job pipeline"`], () => undefined);
+  await telegram()?.(`Job pipeline: ${text}`).catch(() => undefined);
 }
 
 const log = (m: string) => console.log(m);
@@ -113,6 +127,7 @@ async function main() {
       ["replies", () => replies(cfg, store, mailbox)],
       ["followup", () => runFollowups({ cfg, store, mailbox, log })],
     ];
+    await warnGmailExpiry();
     let failed = 0;
     for (const [name, step] of steps) {
       log(`\n--- ${name} (${new Date().toISOString()})`);

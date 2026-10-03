@@ -107,6 +107,21 @@ function toMessage(m: gmail_v1.Schema$Message): MailMessage {
   };
 }
 
+/** Days until a "Testing"-mode Google token expires (7 days after `npm run gmail:auth`); null if unknown. */
+export function gmailDaysLeft(authAt: string | undefined, now: Date = new Date()): number | null {
+  const t = Date.parse(authAt ?? "");
+  return Number.isNaN(t) ? null : Math.floor((t + 7 * 86_400_000 - now.getTime()) / 86_400_000);
+}
+
+/** Google's "invalid_grant" means the sign-in expired or was revoked. Say what to do instead. */
+function explain(err: unknown): never {
+  const msg = err instanceof Error ? err.message : String(err);
+  if (/invalid_grant|token has been expired or revoked/i.test(msg)) {
+    throw new Error("Gmail sign-in expired: run `npm run gmail:auth` again (takes a minute).");
+  }
+  throw err;
+}
+
 export class GmailMailbox implements Mailbox {
   private api: gmail_v1.Gmail;
   private address = "";
@@ -120,13 +135,13 @@ export class GmailMailbox implements Mailbox {
   }
 
   async me(): Promise<string> {
-    if (!this.address) this.address = (await this.api.users.getProfile({ userId: "me" })).data.emailAddress ?? "";
+    if (!this.address) this.address = (await this.api.users.getProfile({ userId: "me" }).catch(explain)).data.emailAddress ?? "";
     return this.address;
   }
 
   async send(mail: OutgoingMail) {
     const raw = Buffer.from(buildMime(mail, await this.me())).toString("base64url");
-    const res = await this.api.users.messages.send({ userId: "me", requestBody: { raw, threadId: mail.threadId } });
+    const res = await this.api.users.messages.send({ userId: "me", requestBody: { raw, threadId: mail.threadId } }).catch(explain);
     const id = res.data.id ?? "";
     // The Message-ID header is needed to thread a follow-up as a real reply.
     const sent = await this.api.users.messages.get({ userId: "me", id, format: "metadata", metadataHeaders: ["Message-ID"] });
@@ -134,12 +149,12 @@ export class GmailMailbox implements Mailbox {
   }
 
   async thread(threadId: string): Promise<MailMessage[]> {
-    const res = await this.api.users.threads.get({ userId: "me", id: threadId, format: "full" });
+    const res = await this.api.users.threads.get({ userId: "me", id: threadId, format: "full" }).catch(explain);
     return (res.data.messages ?? []).map(toMessage);
   }
 
   async search(query: string, max = 20): Promise<MailMessage[]> {
-    const list = await this.api.users.messages.list({ userId: "me", q: query, maxResults: max });
+    const list = await this.api.users.messages.list({ userId: "me", q: query, maxResults: max }).catch(explain);
     const out: MailMessage[] = [];
     for (const m of list.data.messages ?? []) {
       out.push(toMessage((await this.api.users.messages.get({ userId: "me", id: m.id!, format: "full" })).data));

@@ -391,3 +391,13 @@ describe("form answers — labels seen on live forms", () => {
     expect(a).toEqual({ action: "check", value: "No" });
   });
 });
+
+describe("Gmail sign-in expiry", () => {
+  it("counts the days left of the 7-day Testing token", async () => {
+    const { gmailDaysLeft } = await import("../src/gmail.js");
+    expect(gmailDaysLeft("2026-10-01T12:00:00Z", AT_NOON)).toBe(6);
+    expect(gmailDaysLeft("2026-09-25T13:00:00Z", AT_NOON)).toBe(0);
+    expect(gmailDaysLeft("2026-09-24T13:00:00Z", AT_NOON)).toBe(-1);
+    expect(gmailDaysLeft(undefined, AT_NOON)).toBeNull();
+  });
+});

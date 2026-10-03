@@ -62,6 +62,8 @@ async function main() {
   env = setEnv(env, "GMAIL_CLIENT_ID", c.client_id);
   env = setEnv(env, "GMAIL_CLIENT_SECRET", c.client_secret);
   env = setEnv(env, "GMAIL_REFRESH_TOKEN", tokens.refresh_token);
+  // While the Google app is in "Testing", the token dies after 7 days: remember when it was made.
+  env = setEnv(env, "GMAIL_AUTH_AT", new Date().toISOString());
   writeFileSync(envFile, env);
 
   auth.setCredentials(tokens);
