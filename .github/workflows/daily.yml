@@ -1,0 +1,35 @@
+# The full day's work in the cloud, so the Mac can stay off: draft shortlisted jobs, send the email
+# applications, read replies, send follow-ups. Runs a few times on weekdays; the code itself enforces
+# the caps, the 07-19 UTC window and the no-weekend rule, so extra runs are harmless.
+# Form applications are NOT here: they need a real browser + a human for the CAPTCHA (npm run apply).
+name: daily
+on:
+  schedule:
+    - cron: "0 8,11,14,17 * * 1-5"   # 4x on Mon-Fri, inside the sending window
+  workflow_dispatch:
+concurrency:
+  group: pipeline                     # never two runs writing the Sheet at once
+  cancel-in-progress: false
+jobs:
+  daily:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium   # for the PDF CV
+      - run: npm run daily
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SHEET_ID: ${{ secrets.SHEET_ID }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          # Live sending: the Sheet's Control!B2 must also be "live".
+          DRY_RUN: "false"

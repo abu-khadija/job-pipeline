@@ -2,13 +2,24 @@
 // kill switch → live check → working hours → daily cap → per-company limit → send → log.
 // Dry run (the default) only reports what it would do. Form applications go through
 // `npm run apply` (forms/index.ts), where Islam presses Submit himself.
-import { existsSync } from "node:fs";
+import { existsSync, mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import type { Config } from "../config.js";
-import { cvAttachment, type Mailbox } from "../gmail.js";
+import { cvHtml, loadCvMarkdown, renderPdf, withSummary } from "../generate/cv.js";
+import { cvAttachment, type Attachment, type Mailbox } from "../gmail.js";
 import type { DraftRow, SentRow } from "../schema.js";
 import type { Store } from "../store/types.js";
 import { companyAllowed, inWorkingHours, isLive, sentToday } from "./rules.js";
+
+/** Rebuilds the tailored CV PDF from the draft's saved summary (the generate-run file is gone in CI). */
+async function rebuildCv(d: DraftRow): Promise<Attachment | null> {
+  if (!d.cv_summary?.trim()) return null;
+  const dir = mkdtempSync(path.join(tmpdir(), "cv-"));
+  const file = path.join(dir, "Islam-Abu-Khadija-CV.pdf");
+  await renderPdf(cvHtml(withSummary(loadCvMarkdown(), d.cv_summary)), file);
+  return { filename: "Islam-Abu-Khadija-CV.pdf", path: file, mimeType: "application/pdf" };
+}
 
 export interface SendOptions {
   cfg: Config;
@@ -73,12 +84,18 @@ export async function runSend(opts: SendOptions): Promise<SendSummary> {
       continue;
     }
     const label = `${d.company} — ${d.title}`;
-    const cv = cvAttachment(path.resolve(d.files || "."));
+    // The CV PDF. In the cloud the file from the generate run is gone, so rebuild it from the
+    // draft's saved cv_summary (stored in the Sheet). Only truly unrecoverable drafts are held.
+    let cv = cvAttachment(path.resolve(d.files || "."));
     if (!d.files || !existsSync(cv.path)) {
-      d.status = "held";
-      d.hold_reason = "PDF CV missing on this machine: run npm run generate on the Mac";
-      changed = true;
-      continue;
+      const rebuilt = await rebuildCv(d).catch(() => null);
+      if (!rebuilt) {
+        d.status = "held";
+        d.hold_reason = "CV PDF missing and could not be rebuilt (no cv_summary); run npm run generate";
+        changed = true;
+        continue;
+      }
+      cv = rebuilt;
     }
     if (!live) {
       wouldSend.push(`[dry] email to ${d.apply_to}: ${label}`);
