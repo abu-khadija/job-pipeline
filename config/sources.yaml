@@ -135,6 +135,16 @@ ats:
     - { ats: ashby, slug: cohere, company: Cohere (LLM) }
     - { ats: ashby, slug: writer, company: Writer (LLM) }
     - { ats: ashby, slug: perplexity, company: Perplexity (LLM) }
+    # UK — global-remote / EOR / AI (most UK jobs need UK right-to-work; these hire worldwide):
+    - { ats: ashby, slug: elevenlabs, company: ElevenLabs (AI voice, UK/global) }
+    - { ats: ashby, slug: synthesia, company: Synthesia (AI video, UK/global) }
+    - { ats: ashby, slug: faculty, company: Faculty (UK AI) }
+    - { ats: ashby, slug: multiverse, company: Multiverse (UK) }
+    - { ats: ashby, slug: oyster, company: Oyster (EOR, UK) }
+    - { ats: ashby, slug: andela, company: Andela (African talent) }
+    - { ats: greenhouse, slug: polyai, company: PolyAI (UK) }
+    - { ats: greenhouse, slug: stabilityai, company: Stability AI (UK) }
+    - { ats: ashby, slug: causaly, company: Causaly (UK AI) }
 
 # Not automated on purpose (no public API; scraping breaks their terms):
 # Bayt, Wuzzuf, LinkedIn, Wellfound → set up email alerts (docs/SETUP-ISLAM.md B3).
