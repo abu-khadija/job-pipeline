@@ -42,8 +42,10 @@ timezonePoints:
   none: 0        # US Pacific full day, APAC, etc.
 
 typeB:
-  # "Testing AI products" roles. Set penaltyEnabled: false once the public eval portfolio project exists.
+  # "Testing AI products" roles. Islam is actively targeting AI-evaluation (Oct 4): penalty reduced
+  # from 10 to 3 so these high-pay, often-worldwide roles rank well. Set penaltyEnabled: false once
+  # his public eval portfolio exists.
   penaltyEnabled: true
-  penalty: 10
+  penalty: 3
   # Never let the penalty alone push a Type B job below "maybe": these roles are often worldwide.
   keepAtLeastMaybe: true

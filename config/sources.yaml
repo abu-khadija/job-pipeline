@@ -121,6 +121,20 @@ ats:
     - { ats: lever, slug: cloudinary, company: Cloudinary (media SDK) }
     - { ats: ashby, slug: mux, company: Mux (video API) }
     - { ats: ashby, slug: wistia, company: Wistia (video) }
+    # AI-evaluation / AI-data / LLM companies (highest pay, often worldwide) — FTE boards:
+    - { ats: greenhouse, slug: scaleai, company: Scale AI }
+    - { ats: ashby, slug: mercor, company: Mercor }
+    - { ats: greenhouse, slug: prolific, company: Prolific }
+    - { ats: greenhouse, slug: snorkelai, company: Snorkel AI }
+    - { ats: greenhouse, slug: remotasks, company: Remotasks (Scale) }
+    - { ats: greenhouse, slug: hive, company: Hive }
+    - { ats: ashby, slug: encord, company: Encord }
+    - { ats: lever, slug: appen, company: Appen }
+    - { ats: workable, slug: cloudfactory, company: CloudFactory }
+    - { ats: lever, slug: rws, company: RWS / TrainAI }
+    - { ats: ashby, slug: cohere, company: Cohere (LLM) }
+    - { ats: ashby, slug: writer, company: Writer (LLM) }
+    - { ats: ashby, slug: perplexity, company: Perplexity (LLM) }
 
 # Not automated on purpose (no public API; scraping breaks their terms):
 # Bayt, Wuzzuf, LinkedIn, Wellfound → set up email alerts (docs/SETUP-ISLAM.md B3).
