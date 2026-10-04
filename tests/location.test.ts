@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { classifyLocation, classifyLocationList, detectEor } from "../src/normalize/location.js";
+import { classifyLocation, classifyLocationList, detectEor, eligibilityOf } from "../src/normalize/location.js";
 import { cfg } from "./helpers.js";
 
 const t = cfg.targeting;
@@ -99,5 +99,17 @@ describe("detectEor", () => {
   it("plain 'contractor' is not enough (\"US-based contractor\" must not count)", () => {
     expect(detectEor("This is a US-based contractor role", t)).toBe(false);
     expect(detectEor("Hired as an independent contractor", t)).toBe(false);
+  });
+});
+
+describe("Canada/US via EOR (Islam's insight: Valsoft-style companies hire from Egypt)", () => {
+  it("Canada-only with an EOR signal is 'unknown' (AI judges), not dropped", () => {
+    expect(eligibilityOf("americas_only", true)).toBe("unknown");
+    expect(eligibilityOf("us_only", true)).toBe("unknown");
+    expect(eligibilityOf("country_list", true)).toBe("unknown");
+  });
+  it("Canada-only with no EOR signal is still dropped", () => {
+    expect(eligibilityOf("americas_only", false)).toBe("no");
+    expect(eligibilityOf("us_only", false)).toBe("no");
   });
 });

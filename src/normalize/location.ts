@@ -55,12 +55,14 @@ export function eligibilityOf(scope: RemoteScope, viaEor: boolean): "yes" | "no"
       return "yes";
     case "gulf":
       return "unknown";
+    // Region-limited, but if the company hires via EOR / worldwide contractors, let the AI + the
+    // company-site check decide instead of dropping it. This catches Canadian/US companies (e.g.
+    // Valsoft's world) that employ from Egypt through Deel. Without an EOR signal, still a no.
     case "europe_only":
-      return viaEor ? "unknown" : "no";
     case "us_only":
     case "americas_only":
     case "country_list":
-      return "no";
+      return viaEor ? "unknown" : "no";
     default:
       return "unknown";
   }
