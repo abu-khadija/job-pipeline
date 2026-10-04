@@ -54,6 +54,24 @@ sources:
   hackernews: { enabled: false }
 
 # Company ATS boards, polled every 3 hours (npm run fetch -- --only=ats).
+# Job-alert emails Islam already receives become pipeline input (ToS-safe way to use LinkedIn/Wuzzuf,
+# which can't be scraped). Haiku reads each email; each company is then looked up on its own careers site.
+emailLeads:
+  enabled: true
+  lookbackDays: 2
+  maxEmailsPerRun: 25
+  senders:
+    - jobalerts-noreply@linkedin.com
+    - jobs-listings@linkedin.com
+    - alerts@ziprecruiter.com
+    - noreply@glassdoor.com
+    - updates@getjobcopilot.com
+    - mail.remotehunter.com
+    - marketing.remotehunter.com
+    - hi@himalayas.app
+    - wuzzuf.net
+    - bayt.com
+
 # The watchlist grows by itself: any company with an Egypt-eligible job is looked up on
 # Greenhouse, Lever and Ashby. Public read-only APIs; a 404 means "no board".
 ats:

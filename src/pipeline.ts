@@ -18,8 +18,10 @@ import { combineScore, formatBreakdown, scoreBand, statusForScore } from "./scor
 import { addUsage, emptyUsage, estimateCostUsd, pool, type Scorer } from "./score/scorer.js";
 import type { Job, JobRow, ReferralRow, RunLog, WatchRow } from "./schema.js";
 import { fetchBoard } from "./sources/atsBoards.js";
+import { ClaudeLeadExtractor, fetchEmailLeads, resolveLeads, type LeadExtractor } from "./sources/emailLeads.js";
 import { fetchAll } from "./sources/index.js";
 import type { Store } from "./store/types.js";
+import type { Mailbox } from "./gmail.js";
 import type { HttpGet } from "./util/http.js";
 import { verifyJob, type Verdict } from "./verify/index.js";
 import { activeBoards, updateWatchlist, withSeeds } from "./watchlist.js";
@@ -41,6 +43,10 @@ export interface RunOptions {
   probe?: Parameters<typeof updateWatchlist>[5];
   /** Injected in tests; defaults to checking the job on the company's own careers site. */
   verify?: (company: string, title: string) => Promise<Verdict>;
+  /** When set, job-alert emails are read and turned into leads (Phase 1b). */
+  mailbox?: Mailbox | null;
+  /** Injected in tests; defaults to Haiku lead extraction. */
+  leadExtractor?: LeadExtractor;
 }
 
 export interface RunSummary {
@@ -139,6 +145,18 @@ export async function runFetch(opts: RunOptions): Promise<RunSummary> {
     raws.push(...f.jobs);
     Object.assign(perSource, f.perSource);
     errors.push(...f.errors);
+  }
+  if (kind !== "ats" && cfg.sources.emailLeads.enabled && opts.mailbox) {
+    try {
+      const extractor = opts.leadExtractor ?? new ClaudeLeadExtractor(cfg);
+      const leads = await fetchEmailLeads(cfg, opts.mailbox, extractor);
+      const leadJobs = await resolveLeads(cfg, get, leads, nowIso);
+      raws.push(...leadJobs);
+      perSource.email_leads = leadJobs.length;
+      log(`Email alerts: ${leads.length} lead(s), ${leadJobs.length} found on a company site`);
+    } catch (err) {
+      errors.push(`email leads: ${err instanceof Error ? err.message : String(err)}`);
+    }
   }
   if (kind !== "boards" && cfg.sources.ats.enabled) {
     const atsJobs = await fetchAtsBoards(cfg, get, watch, nowIso, errors);

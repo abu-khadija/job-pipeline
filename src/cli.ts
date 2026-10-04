@@ -181,7 +181,7 @@ async function main() {
   }
 
   console.log(`Run: ${kind}. Writing to: ${store.name}. No applications are sent in this phase.`);
-  const summary = await runFetch({ cfg, store, get: makeHttpGet(cfg.sources), scorer, kind, log: (m) => console.log(m) });
+  const summary = await runFetch({ cfg, store, get: makeHttpGet(cfg.sources), scorer, kind, mailbox: gmailIfSetUp(), log: (m) => console.log(m) });
   if (summary.stopped) return;
 
   console.log(`\n${summary.digest}`);

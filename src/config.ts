@@ -81,6 +81,12 @@ const SourcesSchema = z.object({
     weworkremotely: z.object({ enabled: z.boolean(), feeds: z.array(z.string()) }),
     builtin: z.object({ enabled: z.boolean(), listPages: z.array(z.string()), maxJobsPerRun: z.number(), delayMs: z.number() }),
   }).passthrough(),
+  emailLeads: z.object({
+    enabled: z.boolean(),
+    lookbackDays: z.number(),
+    maxEmailsPerRun: z.number(),
+    senders: z.array(z.string()),
+  }),
   ats: z.object({
     enabled: z.boolean(),
     greenhouse: z.string(),

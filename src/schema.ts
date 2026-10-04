@@ -90,6 +90,12 @@ export const AiScore = z.object({
 });
 export type AiScore = z.infer<typeof AiScore>;
 
+// Phase 1b: jobs pulled out of a job-alert email by Haiku (the email is untrusted data).
+export const EmailLeads = z.object({
+  leads: z.array(z.object({ title: z.string(), company: z.string() })),
+});
+export type EmailLeads = z.infer<typeof EmailLeads>;
+
 export const JobStatus = z.enum([
   "filtered_out", "new", "unscored", "score_error", "maybe", "shortlisted", "low_score",
   "drafted", "held", "queued", "applied", "followed_up",
