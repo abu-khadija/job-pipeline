@@ -38,7 +38,7 @@ npm run apply                     # Phase 4: fills forms in a browser window; YO
 npm run replies                   # Phase 5: sorts replies; invites → alert email + prep pack in out/prep/
 npm run followup                  # Phase 5: one follow-up in the same thread after 6 days
 npm run daily                     # all of the above except apply (zsh scripts/install-mac-schedule.sh = hourly)
-npm run gmail:auth                # one-time Gmail sign-in (docs/SETUP-ISLAM.md B2)
+npm run gmail:connect             # one-time Gmail setup via App Password, SMTP/IMAP (never expires)
 npm run verify                    # re-check Sheet jobs on the company's own site: open to Egypt?
 ```
 

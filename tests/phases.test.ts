@@ -51,6 +51,7 @@ describe("send rules", () => {
   it("follow-up due after N days with no real reply; auto-receipts don't count", () => {
     const old = "2026-09-20T09:00:00Z";
     expect(dueForFollowUp([sent({ sent_at: old })], AT_NOON, L)).toHaveLength(1);
+    expect(dueForFollowUp([sent({ sent_at: old, gmail_thread_id: "" })], AT_NOON, L)).toHaveLength(1); // SMTP: no thread id
     expect(dueForFollowUp([sent({ sent_at: old, reply_status: "other" })], AT_NOON, L)).toHaveLength(1);
     expect(dueForFollowUp([sent({ sent_at: old, reply_status: "reject" })], AT_NOON, L)).toHaveLength(0);
     expect(dueForFollowUp([sent({ sent_at: old, followed_up_at: "2026-09-27T00:00:00Z" })], AT_NOON, L)).toHaveLength(0);
@@ -359,8 +360,8 @@ describe("replies (Phase 5)", () => {
   const mine = msg({ from: "Islam <islamabukhadiga@gmail.com>", date: "2026-10-02T09:00:00Z" });
 
   it("invite: marks the job, writes a prep pack and alerts Islam's own inbox", async () => {
-    const { dir, store } = storeWith([draft()], { sent: [sent()] });
-    const mb = new FakeMailbox({ t1: [mine, msg({})] });
+    const { dir, store } = storeWith([draft()], { sent: [sent({ gmail_thread_id: "" })] });
+    const mb = new FakeMailbox({}, [msg({})]);
     const r = await runReplies({ cfg, store, mailbox: mb, brain: new FakeBrain("invite"), now: AT_NOON, prepDir: path.join(dir, "prep") });
     expect(r).toMatchObject({ found: 1, invites: 1 });
     const row = (await store.readTable("Sent"))[0]!;
@@ -373,11 +374,11 @@ describe("replies (Phase 5)", () => {
   });
 
   it("ignores Islam's own messages and does not re-read a seen reply", async () => {
-    const { store } = storeWith([draft()], { sent: [sent()] });
+    const { store } = storeWith([draft()], { sent: [sent({ gmail_thread_id: "" })] });
     const brain = new FakeBrain("reject");
-    const quiet = new FakeMailbox({ t1: [mine] });
+    const quiet = new FakeMailbox({}, [mine]); // search returns only Islam's own message
     expect((await runReplies({ cfg, store, mailbox: quiet, brain, now: AT_NOON })).found).toBe(0);
-    const mb = new FakeMailbox({ t1: [mine, msg({})] });
+    const mb = new FakeMailbox({}, [msg({})]);
     await runReplies({ cfg, store, mailbox: mb, brain, now: AT_NOON });
     expect((await store.readTable("Jobs"))[0]!.status).toBe("replied_reject");
     expect(mb.sentMail).toHaveLength(0); // no alert for a rejection

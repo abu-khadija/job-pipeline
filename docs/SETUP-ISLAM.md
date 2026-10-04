@@ -28,14 +28,13 @@ Then open Claude Code in the repo and paste `FIRST-PROMPT.md`.
 ## Part B — after the exam (~Oct 16, about 1.5 hours)
 
 - [ ] **B1. Calibration read (20 min).** Open the `Drafts` tab, read 20 drafts, write comments in the `notes` column. Tell Claude Code: "read my calibration notes and tune the prompts/config".
-- [ ] **B2. Gmail API (about 15 minutes).** Same Google Cloud project, signed in as islamabukhadiga@gmail.com:
-  1. Enable **Gmail API**: console.cloud.google.com/apis/library/gmail.googleapis.com → **Enable**.
-  2. **Google Auth Platform → Branding / OAuth consent screen**: app name `job-pipeline`, your email as support and developer contact. Audience: **External**. Add yourself under **Test users**.
-  3. **Clients → Create client → Desktop app**, name `job-pipeline-mac` → **Download JSON**.
-  4. Save it as `~/.secrets/gmail-oauth-client.json` (same folder as the Sheets key).
-  5. In the repo: `npm run gmail:auth`. A Google page opens: sign in, allow "send" and "read". It saves the three `GMAIL_*` values into `.env` itself (nothing is printed).
-  6. **Avoid the 7-day expiry:** in "Testing" status Google refresh tokens expire after 7 days. Go to **Audience → Publish app**. Google will show "unverified app" on sign-in (fine for your own use); then run `npm run gmail:auth` once more.
-  Gmail sending runs on the Mac (it needs the PDF files), so no GitHub Secrets are needed for Gmail.
+- [ ] **B2. Connect Gmail with an App Password (about 3 minutes, never expires).** This replaces the old OAuth setup. It needs 2-Step Verification on the account.
+  1. Turn on 2-Step Verification: myaccount.google.com/signinoptions/two-step-verification
+  2. Create an app password: myaccount.google.com/apppasswords → name it `job-pipeline` → copy the 16 letters.
+  3. In the repo run `npm run gmail:connect`, paste the 16 letters when asked (they are not shown in chat). It logs in over SMTP + IMAP to check them, then saves `GMAIL_ADDRESS` and `GMAIL_APP_PASSWORD` to `.env`.
+  4. For the cloud (Mac off), add `GMAIL_ADDRESS` and `GMAIL_APP_PASSWORD` to GitHub Secrets too.
+  App passwords do not expire, so this is done once. No OAuth consent screen, no app publishing, no verification.
+
 - [ ] **B3. Job alerts to that Gmail.** Create alerts on LinkedIn, Wellfound, Jobgether, EU Remote Jobs, Remote Rocketship, Built In, Welcome to the Jungle, using the P1/P2 titles in `config/targeting.yaml`, remote, worldwide/EMEA. Also **Bayt** and **Wuzzuf** (Gulf/Egypt market): remote QA, foreign-currency pay.
 - [ ] **B3b. LinkedIn profile** (recruiter advice, ~15 min): headline and Open to Work as in `docs/ROADMAP-AFTER-PIPELINE.md`.
 - [ ] **B4. Go-live approval.** Only after B1–B2: set `Control!B2` to `live` in the Sheet AND `DRY_RUN=false` in `.env`. Both are needed; caps apply automatically (15/day, 3 per hourly run, 07:00–19:00 UTC Monday–Friday, one per company per 60 days).

@@ -23,7 +23,7 @@ import { runApply } from "./forms/index.js";
 import { runGenerate } from "./generate/index.js";
 import { SonnetWriter } from "./generate/writer.js";
 import { execFile } from "node:child_process";
-import { GmailMailbox, gmailDaysLeft, type Mailbox } from "./gmail.js";
+import { GmailMailbox, GmailSmtp, gmailDaysLeft, type Mailbox } from "./gmail.js";
 import { ClaudeReplyBrain, runFollowups, runReplies } from "./replies.js";
 import { runSend } from "./send/index.js";
 import { verifyJob } from "./verify/index.js";
@@ -44,12 +44,15 @@ function makeStore(local: boolean): Store {
 }
 
 function gmailIfSetUp(): Mailbox | null {
-  return process.env.GMAIL_REFRESH_TOKEN ? new GmailMailbox() : null;
+  // App Password (SMTP/IMAP) is the real path now: no expiry, runs in the cloud. OAuth kept as fallback.
+  if (process.env.GMAIL_APP_PASSWORD) return new GmailSmtp();
+  if (process.env.GMAIL_REFRESH_TOKEN) return new GmailMailbox();
+  return null;
 }
 
 /** A Mac notification (plus Telegram if set) when the Gmail sign-in is about to expire or has. */
 async function warnGmailExpiry() {
-  if (!process.env.GMAIL_REFRESH_TOKEN) return;
+  if (process.env.GMAIL_APP_PASSWORD || !process.env.GMAIL_REFRESH_TOKEN) return;
   const left = gmailDaysLeft(process.env.GMAIL_AUTH_AT);
   if (left === null || left > 1) return;
   const text = left < 0

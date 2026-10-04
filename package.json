@@ -20,19 +20,25 @@
     "followup": "tsx src/cli.ts followup",
     "daily": "tsx src/cli.ts daily",
     "gmail:auth": "tsx src/gmailAuth.ts",
-    "verify": "tsx src/cli.ts verify"
+    "verify": "tsx src/cli.ts verify",
+    "gmail:connect": "tsx src/gmailConnect.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",
     "dotenv": "^18.0.5",
     "fast-xml-parser": "^5.11.2",
     "googleapis": "^182.0.0",
+    "imapflow": "^2.2.4",
+    "mailparser": "^3.9.34",
+    "nodemailer": "^10.0.14",
     "playwright": "^1.63.0",
     "yaml": "^2.9.1",
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@types/mailparser": "^3.9.0",
     "@types/node": "^26.6.4",
+    "@types/nodemailer": "^8.0.2",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vitest": "^4.1.11"

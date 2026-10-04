@@ -120,13 +120,10 @@ export class ClaudeReplyBrain implements ReplyBrain {
 export async function findReplies(row: SentRow, mailbox: Mailbox, me: string, lookbackDays: number): Promise<MailMessage[]> {
   const after = Date.parse(row.sent_at);
   const mine = (m: MailMessage) => m.from.toLowerCase().includes(me.toLowerCase());
-  let msgs: MailMessage[];
-  if (row.gmail_thread_id) msgs = await mailbox.thread(row.gmail_thread_id);
-  else {
-    // Form applications: replies come in new threads. Search by company name.
-    const name = cleanCompany(row.company).replace(/"/g, "");
-    msgs = await mailbox.search(`in:inbox newer_than:${lookbackDays}d "${name}" -from:me`, 10);
-  }
+  // Replies are found by Gmail search (company + recency): works for email and form alike, and
+  // needs no Gmail thread id (SMTP does not expose one).
+  const name = cleanCompany(row.company).replace(/"/g, "");
+  const msgs: MailMessage[] = await mailbox.search(`newer_than:${lookbackDays}d "${name}" -from:me`, 10);
   return msgs.filter((m) => !mine(m) && Date.parse(m.date) > after);
 }
 

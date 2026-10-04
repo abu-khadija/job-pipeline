@@ -48,7 +48,7 @@ export function companyAllowed(company: string, sent: SentRow[], now: Date, l: L
 export function dueForFollowUp(sent: SentRow[], now: Date, l: Limits): SentRow[] {
   const cutoff = now.getTime() - l.sending.followUpAfterDays * 86_400_000;
   return sent.filter(
-    (s) => s.channel === "email" && s.gmail_thread_id && !s.followed_up_at
+    (s) => s.channel === "email" && !s.followed_up_at
       && (!s.reply_status || s.reply_status === "other") && Date.parse(s.sent_at) <= cutoff,
   );
 }

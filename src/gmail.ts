@@ -167,3 +167,77 @@ export class GmailMailbox implements Mailbox {
 export function cvAttachment(folder: string): Attachment {
   return { filename: "Islam-Abu-Khadija-CV.pdf", path: path.join(folder, "Islam-Abu-Khadija-CV.pdf"), mimeType: "application/pdf" };
 }
+
+/**
+ * Gmail over SMTP (send) and IMAP (read) with a Google App Password. No OAuth, so no consent
+ * screen, no app publishing, and the credential never expires — which lets the whole pipeline run
+ * in the cloud with the Mac off. Needs GMAIL_ADDRESS and GMAIL_APP_PASSWORD in the environment.
+ * Replies are found by searching Gmail (company + recency), the same way form applications are.
+ */
+export class GmailSmtp implements Mailbox {
+  private address: string;
+  private pass: string;
+
+  constructor(address = process.env.GMAIL_ADDRESS, pass = process.env.GMAIL_APP_PASSWORD) {
+    if (!address || !pass) throw new Error("Gmail is not set up: run `npm run gmail:connect` (needs a Google App Password, docs/SETUP-ISLAM.md B2).");
+    this.address = address.trim();
+    this.pass = pass.replace(/\s+/g, "");
+  }
+
+  async me(): Promise<string> {
+    return this.address;
+  }
+
+  async send(mail: OutgoingMail): Promise<{ id: string; threadId: string; messageId: string }> {
+    const nodemailer = (await import("nodemailer")).default;
+    const transport = nodemailer.createTransport({
+      host: "smtp.gmail.com", port: 465, secure: true, auth: { user: this.address, pass: this.pass },
+    });
+    try {
+      const info = await transport.sendMail({
+        from: `"Islam Ibrahim Abu-Khadija" <${this.address}>`,
+        to: mail.to, subject: mail.subject, text: mail.body,
+        inReplyTo: mail.inReplyTo, references: mail.inReplyTo ? [mail.inReplyTo] : undefined,
+        attachments: (mail.attachments ?? []).map((a) => ({ filename: a.filename, path: a.path, contentType: a.mimeType })),
+      });
+      // No Gmail thread id over SMTP; the Message-ID threads follow-ups, replies are found by search.
+      return { id: info.messageId ?? "", threadId: "", messageId: info.messageId ?? "" };
+    } finally {
+      transport.close();
+    }
+  }
+
+  /** Not used with the search-based reply flow; kept for the Mailbox interface. */
+  async thread(): Promise<MailMessage[]> {
+    return [];
+  }
+
+  async search(query: string, max = 20): Promise<MailMessage[]> {
+    const { ImapFlow } = await import("imapflow");
+    const { simpleParser } = await import("mailparser");
+    const client = new ImapFlow({ host: "imap.gmail.com", port: 993, secure: true, auth: { user: this.address, pass: this.pass }, logger: false });
+    const out: MailMessage[] = [];
+    await client.connect();
+    try {
+      // "All Mail" so a reply filed under any label is still found; X-GM-RAW = Gmail search syntax.
+      const lock = await client.getMailboxLock("[Gmail]/All Mail");
+      try {
+        // `gmail` (X-GM-RAW) isn't in imapflow's search typings, so the query object is cast.
+        const uids = (await client.search({ gmail: query } as Record<string, unknown>, { uid: true })) || [];
+        for await (const msg of client.fetch(uids.slice(-max) as number[], { uid: true, source: true }, { uid: true })) {
+          const p = await simpleParser(msg.source as Buffer);
+          out.push({
+            id: String(msg.uid), threadId: "", from: p.from?.text ?? "",
+            subject: p.subject ?? "", date: (p.date ?? new Date(0)).toISOString(),
+            messageId: p.messageId ?? "", text: (p.text ?? p.html ?? "").toString().replace(/\s+/g, " ").trim().slice(0, 8000),
+          });
+        }
+      } finally {
+        lock.release();
+      }
+    } finally {
+      await client.logout().catch(() => undefined);
+    }
+    return out;
+  }
+}

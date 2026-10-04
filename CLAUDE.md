@@ -65,6 +65,6 @@ npm run apply            # Phase 4: fill forms in a browser; Islam presses Submi
 npm run replies          # Phase 5: read replies, alert + prep pack on invites
 npm run followup         # Phase 5: one follow-up after N days
 npm run daily            # generate → send → replies → followup (hourly on the Mac)
-npm run gmail:auth       # one-time Gmail sign-in (SETUP B2)
+npm run gmail:connect    # one-time Gmail setup via App Password, SMTP/IMAP (SETUP B2); never expires
 npm run verify           # re-check Sheet jobs on the company's own site (Egypt allowed?)
 ```
