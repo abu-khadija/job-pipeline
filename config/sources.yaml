@@ -102,6 +102,13 @@ ats:
     - { ats: ashby, slug: supabase, company: Supabase }                        # all-remote
     - { ats: ashby, slug: posthog, company: PostHog }                          # all-remote
     - { ats: ashby, slug: commure, company: Commure }                         # health-tech
+    # Valsoft's market (Vertical Market Software acquirers) — pollable boards:
+    - { ats: lever, slug: pointclickcare, company: PointClickCare (health VMS, Canada) }
+    - { ats: greenhouse, slug: mitratech, company: Mitratech (legal VMS) }
+    - { ats: greenhouse, slug: banyansoftware, company: Banyan Software (acquirer) }
+    - { ats: ashby, slug: everfield, company: Everfield (EU VMS acquirer) }
+    - { ats: greenhouse, slug: diligent, company: Diligent }
+    - { ats: ashby, slug: lightspeed, company: Lightspeed (Canada) }
 
 # Not automated on purpose (no public API; scraping breaks their terms):
 # Bayt, Wuzzuf, LinkedIn, Wellfound → set up email alerts (docs/SETUP-ISLAM.md B3).
