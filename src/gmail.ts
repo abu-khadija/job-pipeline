@@ -222,8 +222,8 @@ export class GmailSmtp implements Mailbox {
       // "All Mail" so a reply filed under any label is still found; X-GM-RAW = Gmail search syntax.
       const lock = await client.getMailboxLock("[Gmail]/All Mail");
       try {
-        // `gmail` (X-GM-RAW) isn't in imapflow's search typings, so the query object is cast.
-        const uids = (await client.search({ gmail: query } as Record<string, unknown>, { uid: true })) || [];
+        // `gmailRaw` = Gmail's X-GM-RAW search; not in imapflow's typings, so the query is cast.
+        const uids = (await client.search({ gmailRaw: query } as Record<string, unknown>, { uid: true })) || [];
         for await (const msg of client.fetch(uids.slice(-max) as number[], { uid: true, source: true }, { uid: true })) {
           const p = await simpleParser(msg.source as Buffer);
           out.push({
