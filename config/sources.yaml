@@ -79,6 +79,8 @@ ats:
   greenhouse: "https://boards-api.greenhouse.io/v1/boards/{slug}/jobs?content=true"
   lever: "https://api.lever.co/v0/postings/{slug}?mode=json"
   ashby: "https://api.ashbyhq.com/posting-api/job-board/{slug}?includeCompensation=true"
+  smartrecruiters: "https://api.smartrecruiters.com/v1/companies/{slug}/postings?limit=100"
+  workable: "https://apply.workable.com/api/v1/widget/accounts/{slug}?details=true"
   maxNewCompanyLookupsPerRun: 15
   # Companies to always watch: { ats: greenhouse|lever|ashby, slug: "...", company: "..." }
   # Target companies: remote-first / EOR-friendly / MENA-friendly, with a confirmed public board.
@@ -109,6 +111,16 @@ ats:
     - { ats: ashby, slug: everfield, company: Everfield (EU VMS acquirer) }
     - { ats: greenhouse, slug: diligent, company: Diligent }
     - { ats: ashby, slug: lightspeed, company: Lightspeed (Canada) }
+    # Storyteller's market (sports-tech, content/video SDKs, fan engagement) — hire remote globally:
+    - { ats: smartrecruiters, slug: sportradar, company: Sportradar (sports data) }
+    - { ats: greenhouse, slug: geniussports, company: Genius Sports }
+    - { ats: lever, slug: fireworkhq, company: Firework (shoppable video) }
+    - { ats: greenhouse, slug: bitmovin, company: Bitmovin (video infra) }
+    - { ats: greenhouse, slug: conviva, company: Conviva (streaming analytics) }
+    - { ats: greenhouse, slug: sendbird, company: Sendbird (in-app chat SDK) }
+    - { ats: lever, slug: cloudinary, company: Cloudinary (media SDK) }
+    - { ats: ashby, slug: mux, company: Mux (video API) }
+    - { ats: ashby, slug: wistia, company: Wistia (video) }
 
 # Not automated on purpose (no public API; scraping breaks their terms):
 # Bayt, Wuzzuf, LinkedIn, Wellfound → set up email alerts (docs/SETUP-ISLAM.md B3).

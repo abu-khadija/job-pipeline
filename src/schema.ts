@@ -22,7 +22,7 @@ export const Ats = z.enum([
 ]);
 export type Ats = z.infer<typeof Ats>;
 
-export const AtsBoard = z.object({ ats: z.enum(["greenhouse", "lever", "ashby"]), slug: z.string().min(1) });
+export const AtsBoard = z.object({ ats: z.enum(["greenhouse", "lever", "ashby", "smartrecruiters", "workable"]), slug: z.string().min(1) });
 export type AtsBoard = z.infer<typeof AtsBoard>;
 
 export const SalaryPeriod = z.enum(["hour", "day", "month", "year"]);

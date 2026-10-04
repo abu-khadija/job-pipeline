@@ -74,3 +74,14 @@ describe("source-specific behaviour", () => {
     expect(first.locationText).toBe("Anywhere in the World");
   });
 });
+
+describe("SmartRecruiters + Workable parsers", () => {
+  it("parses a Workable widget board", async () => {
+    const { parseWorkable } = await import("../src/sources/atsBoards.js");
+    const body = JSON.stringify({ jobs: [{ id: 7, title: "QA Automation Engineer", shortcode: "ABC", url: "https://apply.workable.com/acme/j/ABC", country: "Egypt", remote: true, description: "<p>Playwright</p>", employment_type: "Full-time", published_on: "2026-10-01" }] });
+    const [j] = parseWorkable(body, "acme", "Acme");
+    expect(j).toMatchObject({ source: "workable", title: "QA Automation Engineer", company: "Acme", places: ["Egypt"] });
+    expect(j!.locationText).toContain("Remote");
+    expect(j!.atsBoard).toEqual({ ats: "workable", slug: "acme" });
+  });
+});

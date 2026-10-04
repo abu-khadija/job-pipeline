@@ -92,8 +92,10 @@ const SourcesSchema = z.object({
     greenhouse: z.string(),
     lever: z.string(),
     ashby: z.string(),
+    smartrecruiters: z.string(),
+    workable: z.string(),
     maxNewCompanyLookupsPerRun: z.number(),
-    seeds: z.array(z.object({ ats: z.enum(["greenhouse", "lever", "ashby"]), slug: z.string(), company: z.string() })),
+    seeds: z.array(z.object({ ats: z.enum(["greenhouse", "lever", "ashby", "smartrecruiters", "workable"]), slug: z.string(), company: z.string() })),
   }),
 });
 

@@ -26,8 +26,9 @@ export function withSeeds(rows: WatchRow[], cfg: Config, nowIso: string): WatchR
 
 /** Boards to poll: active rows with a real ATS. */
 export function activeBoards(rows: WatchRow[]): { board: AtsBoard; company: string }[] {
+  const pollable = new Set(["greenhouse", "lever", "ashby", "smartrecruiters", "workable"]);
   return rows
-    .filter((r) => r.active !== "no" && (r.ats === "greenhouse" || r.ats === "lever" || r.ats === "ashby") && r.slug)
+    .filter((r) => r.active !== "no" && pollable.has(r.ats) && r.slug)
     .map((r) => ({ board: { ats: r.ats as AtsBoard["ats"], slug: r.slug }, company: r.company }));
 }
 

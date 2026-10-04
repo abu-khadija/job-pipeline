@@ -136,15 +136,109 @@ export function parseAshby(body: string, slug: string, company?: string): RawJob
     });
 }
 
-const PARSERS: Record<AtsName, (body: string, slug: string, company?: string) => RawJob[]> = {
+// ---- Workable (public widget API) -------------------------------------------------------
+
+interface WorkableJob {
+  id?: string | number;
+  title: string;
+  shortcode?: string;
+  url?: string;
+  application_url?: string;
+  employment_type?: string;
+  created_at?: string;
+  published_on?: string;
+  country?: string;
+  city?: string;
+  state?: string;
+  remote?: boolean;
+  telecommuting?: boolean;
+  description?: string;
+  locations?: { country?: string; city?: string }[];
+}
+
+export function parseWorkable(body: string, slug: string, company?: string): RawJob[] {
+  const data = JSON.parse(body) as { jobs?: WorkableJob[] };
+  return (data.jobs ?? []).map((j) => {
+    const places = [j.country, j.state, j.city, ...(j.locations ?? []).map((l) => l.country ?? "")].filter((p): p is string => Boolean(p));
+    const remote = j.remote || j.telecommuting;
+    return {
+      source: "workable",
+      sourceId: String(j.id ?? j.shortcode ?? j.title),
+      url: j.url ?? j.application_url ?? `https://apply.workable.com/${slug}/j/${j.shortcode ?? ""}`,
+      applyUrl: j.application_url ?? j.url ?? null,
+      title: j.title,
+      company: company ?? slug,
+      locationText: `${remote ? "Remote, " : ""}${places.join(", ")}`,
+      places,
+      employmentTypeRaw: j.employment_type ?? null,
+      postedAt: j.published_on ?? j.created_at ?? null,
+      descriptionHtml: j.description ?? "",
+      atsBoard: { ats: "workable" as const, slug },
+    };
+  });
+}
+
+// ---- SmartRecruiters (public postings API) ----------------------------------------------
+// The list has no description, so for QA-titled jobs we fetch the posting detail.
+
+interface SrPosting {
+  id: string;
+  name: string;
+  releasedDate?: string;
+  company?: { identifier?: string; name?: string };
+  location?: { city?: string; region?: string; country?: string; remote?: boolean; hybrid?: boolean; fullLocation?: string };
+  typeOfEmployment?: { label?: string };
+}
+
+export async function fetchSmartRecruiters(cfg: Config, get: HttpGet, board: AtsBoard, company: string | undefined, wantDetail: (title: string) => boolean): Promise<RawJob[]> {
+  const list = JSON.parse(await get(boardUrl(cfg, board))) as { content?: SrPosting[] };
+  const out: RawJob[] = [];
+  for (const j of list.content ?? []) {
+    const loc = j.location ?? {};
+    const places = [loc.country?.toUpperCase(), loc.region, loc.city].filter((p): p is string => Boolean(p));
+    let descriptionHtml = "";
+    if (wantDetail(j.name)) {
+      try {
+        const d = JSON.parse(await get(`https://api.smartrecruiters.com/v1/companies/${board.slug}/postings/${j.id}`)) as { jobAd?: { sections?: Record<string, { text?: string }> } };
+        descriptionHtml = Object.values(d.jobAd?.sections ?? {}).map((s) => s.text ?? "").filter(Boolean).join("\n");
+      } catch {
+        // detail fetch failed; keep the job with its title + location only
+      }
+    }
+    out.push({
+      source: "smartrecruiters",
+      sourceId: j.id,
+      url: `https://jobs.smartrecruiters.com/${board.slug}/${j.id}`,
+      applyUrl: `https://jobs.smartrecruiters.com/${board.slug}/${j.id}`,
+      title: j.name,
+      company: company ?? j.company?.name ?? board.slug,
+      locationText: `${loc.remote ? "Remote, " : loc.hybrid ? "Hybrid, " : ""}${loc.fullLocation ?? places.join(", ")}`,
+      places,
+      employmentTypeRaw: j.typeOfEmployment?.label ?? null,
+      postedAt: j.releasedDate ?? null,
+      descriptionHtml,
+      atsBoard: { ats: "smartrecruiters" as const, slug: board.slug },
+    });
+  }
+  return out;
+}
+
+const PARSERS: Partial<Record<AtsName, (body: string, slug: string, company?: string) => RawJob[]>> = {
   greenhouse: parseGreenhouse,
   lever: parseLever,
   ashby: parseAshby,
+  workable: parseWorkable,
 };
 
 /** Reads one company's board. Throws on HTTP errors (the caller logs them). */
 export async function fetchBoard(cfg: Config, get: HttpGet, board: AtsBoard, company?: string): Promise<RawJob[]> {
-  return PARSERS[board.ats](await get(boardUrl(cfg, board)), board.slug, company);
+  if (board.ats === "smartrecruiters") {
+    const { passesTitlePrefilter } = await import("../normalize/title.js");
+    return fetchSmartRecruiters(cfg, get, board, company, (t) => passesTitlePrefilter(t, cfg.targeting));
+  }
+  const parser = PARSERS[board.ats];
+  if (!parser) throw new Error(`No parser for ATS ${board.ats}`);
+  return parser(await get(boardUrl(cfg, board)), board.slug, company);
 }
 
 // ---- Finding a company's board ----------------------------------------------------------

@@ -217,7 +217,7 @@ describe("runFetch — ATS watchlist", () => {
     await run(store, new FakeScorer(), { kind: "ats", get });
     const urls = get.mock.calls.map((c) => c[0]);
     expect(urls.some((u) => u.includes("api.lever.co/v0/postings/spotify"))).toBe(true);
-    expect(urls.some((u) => u.includes("ashbyhq"))).toBe(false);
+    expect(urls.some((u) => u.includes("ashbyhq") && u.includes("ramp"))).toBe(false); // ramp is inactive
     expect(urls.some((u) => u.includes("himalayas") || u.includes("remoteok"))).toBe(false);
     expect(store.allJobs.some((r) => r.sources.includes("lever"))).toBe(true);
     expect(store.tables.Watchlist.find((w) => w.slug === "spotify")!.last_checked).not.toBe("");
