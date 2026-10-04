@@ -21,7 +21,8 @@
     "daily": "tsx src/cli.ts daily",
     "gmail:auth": "tsx src/gmailAuth.ts",
     "verify": "tsx src/cli.ts verify",
-    "gmail:connect": "tsx src/gmailConnect.ts"
+    "gmail:connect": "tsx src/gmailConnect.ts",
+    "digest": "tsx src/cli.ts digest"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",

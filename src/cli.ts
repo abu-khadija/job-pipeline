@@ -13,6 +13,7 @@
 //   npm run followup                   → Phase 5: one follow-up after N days without a reply
 //   npm run daily                      → generate → send → replies → followup (the Mac runs this hourly)
 //   npm run verify                     → check jobs in the Sheet on the company's own site (Egypt allowed?)
+//   npm run digest                     → email Islam a one-line daily summary (to his own inbox)
 import "dotenv/config";
 import { writeFileSync, mkdirSync } from "node:fs";
 import { createInterface } from "node:readline/promises";
@@ -24,6 +25,7 @@ import { runGenerate } from "./generate/index.js";
 import { SonnetWriter } from "./generate/writer.js";
 import { execFile } from "node:child_process";
 import { GmailMailbox, GmailSmtp, gmailDaysLeft, type Mailbox } from "./gmail.js";
+import { sendDailyDigest } from "./digestDaily.js";
 import { ClaudeReplyBrain, runFollowups, runReplies } from "./replies.js";
 import { runSend } from "./send/index.js";
 import { verifyJob } from "./verify/index.js";
@@ -100,6 +102,13 @@ async function main() {
     const store = makeStore(local);
     console.log(`Drafting to: ${store.name}. Drafting never sends anything.`);
     await generate(cfg, store, jobIds, max);
+    return;
+  }
+  if (command === "digest") {
+    const mailbox = gmailIfSetUp();
+    if (!mailbox) return log("Digest: Gmail not set up (npm run gmail:connect). Skipped.");
+    const r = await sendDailyDigest(makeStore(local), mailbox);
+    log(`Daily digest emailed: ${r.subject}`);
     return;
   }
   if (command === "verify") {

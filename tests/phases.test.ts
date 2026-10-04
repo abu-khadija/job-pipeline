@@ -436,3 +436,28 @@ describe("weekends", () => {
     expect(mb.sentMail).toHaveLength(0);
   });
 });
+
+describe("daily digest email", async () => {
+  const { buildDailyDigest } = await import("../src/digestDaily.js");
+  const jr = (over: Partial<JobRow>) => ({ status: "shortlisted", company: "Acme", title: "QA", score: 80, ...over }) as JobRow;
+  it("summarises today's sends, invites, and forms waiting", () => {
+    const now = new Date("2026-10-05T18:00:00Z");
+    const { subject, body } = buildDailyDigest(
+      [jr({}), jr({ status: "drafted" })],
+      [draft({ status: "draft", route: "form", company: "FormCo", title: "SDET" })],
+      [sent({ sent_at: "2026-10-05T10:00:00Z", company: "Sent1" }), sent({ reply_status: "invite", reply_at: "2026-10-05T09:00:00Z", company: "InviteCo" })],
+      now,
+    );
+    expect(subject).toContain("2026-10-05");
+    expect(body).toContain("NEW REPLIES TODAY");
+    expect(body).toContain("InviteCo");
+    expect(body).toContain("Applications sent today: 1");
+    expect(body).toContain("Sent1");
+    expect(body).toContain("npm run apply");
+    expect(body).toContain("FormCo");
+  });
+  it("says so on a quiet day", () => {
+    const { subject } = buildDailyDigest([], [], [], new Date("2026-10-06T18:00:00Z"));
+    expect(subject).toContain("no activity today");
+  });
+});

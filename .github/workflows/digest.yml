@@ -1,0 +1,24 @@
+# One plain-English summary email to Islam each weekday evening, so he never has to open the Sheet.
+name: digest
+on:
+  schedule:
+    - cron: "30 17 * * 1-5"   # 19:30 Cairo, after the day's sends
+  workflow_dispatch:
+concurrency:
+  group: pipeline
+  cancel-in-progress: false
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run digest
+        env:
+          SHEET_ID: ${{ secrets.SHEET_ID }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
