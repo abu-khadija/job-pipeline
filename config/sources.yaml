@@ -81,7 +81,27 @@ ats:
   ashby: "https://api.ashbyhq.com/posting-api/job-board/{slug}?includeCompensation=true"
   maxNewCompanyLookupsPerRun: 15
   # Companies to always watch: { ats: greenhouse|lever|ashby, slug: "...", company: "..." }
-  seeds: []
+  # Target companies: remote-first / EOR-friendly / MENA-friendly, with a confirmed public board.
+  # Polled every 3h for QA roles; each is still checked for Egypt eligibility before it counts.
+  # Verified live Oct 4 2026. Islam can set a Watchlist row's `active` to no to stop one.
+  seeds:
+    - { ats: greenhouse, slug: canonical, company: Canonical (Ubuntu) }       # hires "Home based - EMEA" (Egypt ok)
+    - { ats: greenhouse, slug: elastic, company: Elastic }                     # remote-first, global
+    - { ats: greenhouse, slug: grafanalabs, company: Grafana Labs }           # remote-first, global
+    - { ats: greenhouse, slug: mongodb, company: MongoDB }
+    - { ats: greenhouse, slug: twilio, company: Twilio }
+    - { ats: greenhouse, slug: docker, company: Docker }                       # all-remote
+    - { ats: greenhouse, slug: postman, company: Postman }
+    - { ats: greenhouse, slug: webflow, company: Webflow }
+    - { ats: greenhouse, slug: contentful, company: Contentful }
+    - { ats: greenhouse, slug: typeform, company: Typeform }
+    - { ats: greenhouse, slug: doximity, company: Doximity }                   # health-tech (his domain)
+    - { ats: greenhouse, slug: instabug, company: Instabug }                   # Egyptian-founded
+    - { ats: lever, slug: toptal, company: Toptal }
+    - { ats: ashby, slug: deel, company: Deel }                                # the EOR company itself
+    - { ats: ashby, slug: supabase, company: Supabase }                        # all-remote
+    - { ats: ashby, slug: posthog, company: PostHog }                          # all-remote
+    - { ats: ashby, slug: commure, company: Commure }                         # health-tech
 
 # Not automated on purpose (no public API; scraping breaks their terms):
 # Bayt, Wuzzuf, LinkedIn, Wellfound → set up email alerts (docs/SETUP-ISLAM.md B3).
