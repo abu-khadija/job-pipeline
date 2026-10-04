@@ -11,7 +11,7 @@ import { stripHtml } from "../normalize/text.js";
 import type { HttpGet } from "../util/http.js";
 
 export interface CompanyPosting {
-  provider: "recruitee" | "personio" | "greenhouse" | "lever" | "ashby" | "workable";
+  provider: "recruitee" | "personio" | "greenhouse" | "lever" | "ashby" | "workable" | "bamboohr";
   url: string;            // the company's own page for this job (apply there)
   title: string;
   /** Places the company says the job is open to. Empty = it doesn't say. */
@@ -112,7 +112,15 @@ const workable: Finder = async (get, slug, title) => {
   return { provider: "workable", url: j.url, title: j.title, places, remote: Boolean(j.telecommuting), text: "" };
 };
 
-const FINDERS: Finder[] = [recruitee, personio, greenhouse, lever, ashby, workable];
+const bamboohr: Finder = async (get, slug, title) => {
+  const d = await json<{ result?: { id: number; jobOpeningName?: string; location?: { city?: string | null; state?: string | null; country?: string | null }; isRemote?: boolean | null }[] }>(get, `https://${slug}.bamboohr.com/careers/list`);
+  const j = d?.result?.find((x) => sameTitle(x.jobOpeningName ?? "", title));
+  if (!j) return null;
+  const places = [j.location?.country, j.location?.state, j.location?.city].filter((p): p is string => Boolean(p));
+  return { provider: "bamboohr", url: `https://${slug}.bamboohr.com/careers/${j.id}`, title: j.jobOpeningName ?? title, places, remote: j.isRemote !== false, text: "" };
+};
+
+const FINDERS: Finder[] = [recruitee, personio, greenhouse, lever, ashby, workable, bamboohr];
 
 /** Finds the job on the company's own site, or null if it can't be found. */
 export async function findCompanyPosting(get: HttpGet, company: string, title: string): Promise<CompanyPosting | null> {

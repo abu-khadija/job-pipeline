@@ -50,6 +50,17 @@ describe("finding the posting", () => {
     const p = await findCompanyPosting(get, "Codest Ltd.", "Senior QA Automation Engineer");
     expect(p).toMatchObject({ provider: "recruitee", url: "https://thecodest.recruitee.com/o/senior-qa-automation-engineer", places: ["Poland"] });
   });
+  it("reads a BambooHR board (Newel Health is on BambooHR) and returns its careers link", async () => {
+    const get = async (url: string) => {
+      if (url === "https://newelhealth.bamboohr.com/careers/list") {
+        return JSON.stringify({ result: [{ id: 148, jobOpeningName: "Test Automation Engineer", location: { city: null, state: null }, isRemote: true }] });
+      }
+      throw new Error("HTTP 404");
+    };
+    const p = await findCompanyPosting(get, "Newel Health", "Test Automation Engineer");
+    expect(p).toMatchObject({ provider: "bamboohr", url: "https://newelhealth.bamboohr.com/careers/148", remote: true });
+  });
+
   it("returns null when no board has the job", async () => {
     expect(await findCompanyPosting(async () => { throw new Error("HTTP 404"); }, "Nobody Inc", "QA Engineer")).toBeNull();
   });
