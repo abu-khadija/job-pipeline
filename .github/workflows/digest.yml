@@ -2,7 +2,7 @@
 name: digest
 on:
   schedule:
-    - cron: "30 17 * * 1-5"   # 19:30 Cairo, after the day's sends
+    - cron: "47 17 * * 1-5"   # ~19:47 Cairo, after the day's sends (odd minute: GitHub drops on-the-hour runs)
   workflow_dispatch:
 concurrency:
   group: pipeline

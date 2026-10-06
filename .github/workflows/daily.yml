@@ -5,7 +5,10 @@
 name: daily
 on:
   schedule:
-    - cron: "0 8,11,14,17 * * 1-5"   # 4x on Mon-Fri, inside the sending window
+    # Hourly through the sending window, at an odd minute: GitHub drops or delays runs scheduled on
+    # the hour (only 1 of 4 fired on Oct 5). Extra runs are harmless: caps, hours and the weekday rule
+    # are enforced in code.
+    - cron: "23 7-18 * * 1-5"
   workflow_dispatch:
 concurrency:
   group: pipeline                     # never two runs writing the Sheet at once
